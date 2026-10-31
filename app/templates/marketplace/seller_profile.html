@@ -1,0 +1,31 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ seller.shop_name or seller.full_name }} | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+<div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:2rem;padding:1.25rem;background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow)">
+  {% if seller.profile_photo_url %}
+  <img src="{{ seller.profile_photo_url }}" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid var(--border)">
+  {% else %}
+  <div style="width:88px;height:88px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:2rem">👤</div>
+  {% endif %}
+  <div>
+    <h1 style="margin:0;font-size:1.5rem">{{ seller.shop_name or seller.full_name }}</h1>
+    {% if seller.shop_name and seller.full_name %}<p style="margin:0.25rem 0 0;color:var(--text-muted)">{{ seller.full_name }}</p>{% endif %}
+    <p style="margin:0.35rem 0 0;color:var(--text-muted);font-size:0.9rem">Seller on {{ business_name }}{% if seller.created_at %} · Since {{ seller.created_at[:10] }}{% endif %}</p>
+    {% if seller.bio %}<p style="margin:0.75rem 0 0;max-width:560px">{{ seller.bio }}</p>{% endif %}
+    {% if seller.mobile %}<p style="margin:0.35rem 0 0;font-size:0.9rem;color:var(--text-muted)">📱 {{ seller.mobile }}</p>{% endif %}
+  </div>
+</div>
+<h2 style="margin-bottom:1rem">Listings</h2>
+<div class="product-grid">
+{% for p in products %}
+<a href="{{ url_for('marketplace.detail', uuid=p.uuid) }}" class="product-card">
+  <div class="product-card-img">{% if p.primary_image %}<img src="{{ p.primary_image }}" alt="{{ p.title }}">{% endif %}</div>
+  <div class="product-card-body"><h3>{{ p.title }}</h3><div class="product-price">NPR {{ "{:,.0f}".format(p.selling_price) }}</div></div>
+</a>
+{% else %}
+<p style="color:var(--text-muted)">No active listings.</p>
+{% endfor %}
+</div>
+</div></section>
+{% endblock %}

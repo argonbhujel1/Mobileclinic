@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  {% set _site = business_name or 'Mobile Clinic Urlabari' %}
+  {% if _site|lower in ['mobile clinic', 'mobileclinic'] %}
+    {% set _site = 'Mobile Clinic Urlabari' %}
+  {% endif %}
+  {% set _tagline = settings.get('tagline') if settings else none %}
+  {% set _tagline = _tagline or 'Mobile Clinic Urlabari — buy & sell second-hand smartphones, exchange and expert mobile repair in Morang, Nepal' %}
+  {% set _default_desc = (settings.get('meta_description') if settings and settings.get('meta_description') else (_tagline ~ ' | ' ~ _site ~ ' Urlabari — used phones, mobile repair, buy sell exchange in Urlabari Morang Nepal.'))[:160] %}
+  {% set _default_title = (settings.get('meta_title') if settings and settings.get('meta_title') else ('Mobile Clinic Urlabari | Second-hand Phones & Mobile Repair')) %}
+  {% set _canonical = (request.url.split('?')[0] if request else '') %}
+  {% set _origin = (request.url_root.rstrip('/') if request else '') %}
+  {% set _fav = (settings.get('favicon_url') if settings else none) or (settings.get('logo_url') if settings else none) %}
+  {% if _fav and _fav.startswith('/') %}{% set _fav = _origin ~ _fav %}{% endif %}
+  {% set _logo = settings.get('logo_url') if settings else none %}
+  {% if _logo and _logo.startswith('/') %}{% set _logo = _origin ~ _logo %}{% endif %}
+
+  <title>{% block title %}{{ _default_title }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ _default_desc }}{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}Mobile Clinic, Mobile Clinic Urlabari, Mobile Clinic Nepal, mobile clinic shop, second hand mobile Urlabari, used smartphones Urlabari, mobile shop Urlabari, mobile repair Urlabari, buy sell phone Urlabari Morang, phone repair Urlabari, second hand iPhone Urlabari, Samsung used Urlabari, mobile clinic Morang Nepal, phone pickup repair Urlabari{% endblock %}">
+  <meta name="author" content="{{ _site }}">
+  <meta name="application-name" content="{{ _site }}">
+  <meta name="robots" content="{% block meta_robots %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endblock %}">
+  <meta name="googlebot" content="index, follow">
+  <meta name="theme-color" content="{{ settings.get('theme_primary', '#0f4c81') if settings else '#0f4c81' }}">
+  <link rel="canonical" href="{% block canonical %}{{ _canonical }}{% endblock %}">
+
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:site_name" content="{{ _site }}">
+  <meta property="og:title" content="{% block og_title %}{{ _default_title }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ _default_desc }}{% endblock %}">
+  <meta property="og:url" content="{% block og_url %}{{ _canonical }}{% endblock %}">
+  <meta property="og:locale" content="en_US">
+  {% block og_image_tags %}
+  {% if settings and settings.get('logo_url') %}
+  <meta property="og:image" content="{{ settings.get('logo_url') }}">
+  {% endif %}
+  {% endblock %}
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ _default_title }}">
+  <meta name="twitter:description" content="{{ _default_desc }}">
+  {% if settings and settings.get('logo_url') %}
+  <meta name="twitter:image" content="{{ settings.get('logo_url') }}">
+  {% endif %}
+
+  <meta name="geo.region" content="NP-P1">
+  <meta name="geo.placename" content="Urlabari, Morang, Nepal">
+  <meta name="geo.position" content="26.6634;87.5924">
+  <meta name="ICBM" content="26.6634, 87.5924">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  {% if settings and settings.get('google_site_verification') %}
+  <meta name="google-site-verification" content="{{ settings.get('google_site_verification') }}">
+  {% endif %}
+
+  {# Favicon — absolute URL helps Google Search Console #}
+  {% if _fav %}
+  <link rel="icon" href="{{ _fav }}" sizes="32x32">
+  <link rel="icon" href="{{ _fav }}" sizes="48x48">
+  <link rel="shortcut icon" href="{{ _fav }}">
+  <link rel="apple-touch-icon" href="{{ _fav }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ _fav }}">
+  <meta property="og:image" content="{{ _logo or _fav }}">
+  {% endif %}
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["MobilePhoneStore", "LocalBusiness", "Store"],
+        "@id": {{ ((request.url_root if request else '') ~ '#business')|tojson }},
+        "name": "Mobile Clinic Urlabari",
+        "legalName": {{ _site|tojson }},
+        "alternateName": ["Mobile Clinic", "Mobile Clinic Urlabari", "Mobile Clinic Nepal", "Mobile Clinic Morang"],
+        "description": {{ _tagline|tojson }},
+        "url": {{ (request.url_root if request else '')|tojson }},
+        "telephone": {{ (business_phone or (settings.get('contact_phone') if settings else '') or '')|tojson }},
+        "email": {{ (business_email or (settings.get('contact_email') if settings else '') or '')|tojson }},
+        "image": {{ ((settings.get('logo_url') if settings else '') or '')|tojson }},
+        "priceRange": "NPR",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Urlabari",
+          "addressRegion": "Morang",
+          "addressCountry": "NP"
+        },
+        "areaServed": [
+          { "@type": "City", "name": "Urlabari" },
+          { "@type": "AdministrativeArea", "name": "Morang" },
+          { "@type": "Country", "name": "Nepal" }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": {{ ((request.url_root if request else '') ~ '#website')|tojson }},
+        "url": {{ (request.url_root if request else '')|tojson }},
+        "name": "Mobile Clinic Urlabari",
+        "legalName": {{ _site|tojson }},
+        "alternateName": ["Mobile Clinic", "Mobile Clinic Urlabari", "Mobile Clinic Nepal", "Mobile Clinic Morang"],
+        "description": {{ _tagline|tojson }},
+        "publisher": { "@id": {{ ((request.url_root if request else '') ~ '#business')|tojson }} },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {{ ((request.url_root if request else '') ~ 'phones/?q={search_term_string}')|tojson }},
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>
+  {% block structured_data %}{% endblock %}
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div id="page-loader" aria-hidden="true">
+  <div class="page-loader-inner">
+    <div class="page-loader-spinner"></div>
+    <p>Loading…</p>
+  </div>
+</div>
+
+  {% include "components/header.html" %}
+  {% include "components/flashes.html" %}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  {% include "components/footer.html" %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/maps.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+  {% set wa = (settings.get('whatsapp_number') if settings else none) or whatsapp or business_phone %}
+  {% if wa %}
+  {% set wa_digits = wa|replace(' ','')|replace('-','')|replace('+','') %}
+  <a href="https://wa.me/{{ wa_digits }}" class="float-whatsapp" target="_blank" rel="noopener noreferrer" title="WhatsApp chat" aria-label="WhatsApp">
+    <span class="float-whatsapp-icon">💬</span>
+  </a>
+  {% endif %}
+</body>
+</html>

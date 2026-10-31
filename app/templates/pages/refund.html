@@ -1,0 +1,61 @@
+{% extends "layouts/base.html" %}
+{% block title %}Refund & Return Policy | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:800px">
+<article class="legal-doc" style="line-height:1.7">
+<h1>Refund & Return Policy</h1>
+<p style="color:var(--text-muted)"><em>Last updated: October 2026 · {{ business_name }}, Urlabari, Morang, Nepal</em></p>
+
+<h2>1. Overview</h2>
+<p>This policy explains when refunds, returns, replacements, or order cancellations may apply for phones purchased through {{ business_name }} and for repair-related payments. Because we deal primarily in second-hand devices, conditions of return are stricter than typical retail for brand-new sealed products.</p>
+
+<h2>2. Order cancellation before dispatch</h2>
+<ul>
+  <li>If your order is still <strong>pending</strong> or <strong>awaiting payment verification</strong> and the device has not been prepared for dispatch, you may request cancellation via contact channels or your order tracking page.</li>
+  <li>For QR payments already marked paid, refund of the verified amount is subject to admin/seller confirmation and the payment channel’s rules (eSewa, Khalti, bank, etc.).</li>
+  <li>COD orders cancelled before dispatch generally incur no product charge.</li>
+</ul>
+
+<h2>3. QR partial / minimum payments</h2>
+<p>If a listing requires a minimum QR payment (for example NPR 5,000 against a NPR 25,000 phone), that amount is treated as a commitment toward the order once the seller or admin verifies it. If the order is cancelled by the shop before delivery due to our inability to fulfil, the verified QR amount will be refunded or credited as agreed. If the buyer cancels without a valid reason after verification, the shop may apply a reasonable deduction for costs already incurred, communicated case by case.</p>
+
+<h2>4. Returns after delivery (phones)</h2>
+<ul>
+  <li><strong>Wrong item or major mismatch</strong> (different model than listed): report within 24–48 hours of delivery with photos; we will arrange return/replacement or refund of amounts paid after verification.</li>
+  <li><strong>Dead on arrival / critical functional failure</strong> not disclosed in the listing: report promptly with evidence; eligible cases may receive repair, replacement, or partial/full refund at our discretion after inspection.</li>
+  <li><strong>Change of mind</strong> on second-hand devices is generally not eligible for full refund once delivered and accepted, unless the listing explicitly offered a return window.</li>
+  <li>Device must be returned with all accessories included at sale, in similar condition, without new physical damage caused by the buyer.</li>
+</ul>
+
+<h2>5. Non-returnable situations</h2>
+<ul>
+  <li>Damage after delivery due to misuse, liquid, unauthorised repair, or flashing/modification by the buyer.</li>
+  <li>Issues already clearly disclosed in the listing (e.g. “screen burn-in”, “battery health low”) when the device matches that description.</li>
+  <li>Missing original packaging when packaging was not guaranteed.</li>
+</ul>
+
+<h2>6. Repair service payments</h2>
+<ul>
+  <li>Diagnosis fees, if any were agreed in advance, may be non-refundable once diagnosis is completed.</li>
+  <li>If repair cannot be completed due to parts unavailability, amounts paid for unperformed work will be refunded minus any agreed diagnosis charge.</li>
+  <li>If the customer abandons a device after approving a repair quote, storage and incomplete-work policies may apply as communicated by the shop.</li>
+</ul>
+
+<h2>7. How to request a refund</h2>
+<ol>
+  <li>Contact us at <strong>{{ business_email }}</strong> or <strong>{{ business_phone }}</strong> with order/ticket ID, reason, and photos/video.</li>
+  <li>Our team inspects and confirms eligibility.</li>
+  <li>Approved refunds are processed via the original payment path where possible, or another agreed method, within a reasonable period after approval (payment providers may take additional time).</li>
+</ol>
+
+<h2>8. Seller-fulfilled listings</h2>
+<p>Where a third-party seller’s listing is involved, refund handling may be coordinated with that seller. {{ business_name }} may mediate but sellers remain responsible for the accuracy of their listings and for honouring verified payment terms.</p>
+
+<h2>9. Policy changes</h2>
+<p>We may update this policy; the version on this page applies to orders placed after the published date unless a written exception was given.</p>
+
+<h2>10. Contact</h2>
+<p>{{ business_name }} · Urlabari, Morang, Nepal · {{ business_email }} · {{ business_phone }}</p>
+</article>
+</div></section>
+{% endblock %}

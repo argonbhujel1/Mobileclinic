@@ -1,0 +1,49 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Admin QR | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Admin Commission QR</h1>
+</div>
+<form method="post" enctype="multipart/form-data" style="max-width:480px;margin-top:1.25rem;background:#fff;padding:1.5rem;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow)">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group">
+    <label>Upload QR Image</label>
+    <input type="file" name="qr_image" accept="image/*" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>Or ImgBB / Image URL</label>
+    <input type="url" name="imgbb_url" class="form-control" placeholder="https://...">
+  </div>
+  <div class="form-group">
+    <label>Label</label>
+    <input type="text" name="label" class="form-control" value="Admin Commission QR">
+  </div>
+  <button type="submit" class="btn btn-primary">Set Active Admin QR</button>
+</form>
+{% if current %}
+<div style="margin-top:2rem;background:#fff;padding:1.5rem;border-radius:12px;border:1px solid var(--border);display:inline-block">
+  <p style="margin-bottom:0.75rem;font-weight:600">Active QR{% if current.label %} — {{ current.label }}{% endif %}</p>
+  <img src="{{ current.cloudinary_url }}" alt="Current Admin QR" style="max-width:280px;border-radius:8px;border:1px solid var(--border)">
+  <p style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-muted)">{{ current.created_at or '' }}</p>
+</div>
+{% endif %}
+{% if history %}
+<h2 style="font-size:1.1rem;margin:2rem 0 0.75rem">History</h2>
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr><th>Label</th><th>Active</th><th>Created</th></tr>
+    </thead>
+    <tbody>
+      {% for h in history %}
+      <tr>
+        <td>{{ h.label or '—' }}</td>
+        <td>{% if h.is_active %}<span class="badge badge-success">Yes</span>{% else %}<span class="badge badge-muted">No</span>{% endif %}</td>
+        <td>{{ h.created_at or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

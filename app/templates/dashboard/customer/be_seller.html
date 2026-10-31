@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+{% block title %}Become a Seller | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:500px">
+<h1>Become a Seller</h1>
+<p style="margin:1rem 0;color:var(--text-muted)">Submit the form. Credentials will be emailed within a few minutes.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="form-group"><label>Full Name</label><input type="text" name="full_name" class="form-control" value="{{ current_user.full_name }}" required></div>
+<div class="form-group"><label>Mobile</label><input type="tel" name="mobile" class="form-control" value="{{ current_user.mobile }}" required></div>
+<div class="form-group"><label>Email</label><input type="email" class="form-control" value="{{ current_user.email }}" disabled></div>
+<button type="submit" class="btn btn-primary" style="width:100%">Apply to Become Seller</button>
+</form></div></section>{% endblock %}

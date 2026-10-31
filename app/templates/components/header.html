@@ -1,0 +1,55 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="{{ url_for('main.home') }}" class="logo">
+      {% if settings.get('logo_url') %}
+        <img src="{{ settings.get('logo_url') }}" alt="{{ business_name }}" class="logo-img">
+      {% else %}
+        <span class="logo-icon">📱</span>
+      {% endif %}
+      <span>{{ business_name }}</span>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('marketplace.browse') }}">Browse Phones</a></li>
+        <li><a href="{{ url_for('marketplace.sell') }}">Sell</a></li>
+        <li><a href="{{ url_for('repair.services') }}">Repair</a></li>
+        <li><a href="{{ url_for('main.track_lookup') }}">Track</a></li>
+        <li><a href="{{ url_for('main.buy_sell_exchange') }}">Exchange</a></li>
+        <li><a href="{{ url_for('main.about') }}">About</a></li>
+        <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a href="{{ url_for('marketplace.cart') }}" class="btn btn-ghost btn-sm" title="Cart">🛒</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard.customer') if current_user.role == 'customer' else url_for('dashboard.seller') if current_user.role == 'seller' else url_for('admin.overview') if current_user.role == 'admin' else url_for('dashboard.staff') }}" class="btn btn-outline btn-sm">Dashboard</a>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm">Logout</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Register</a>
+      {% endif %}
+      <button class="mobile-toggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+<div class="mobile-nav">
+  <div class="mobile-nav-panel">
+    <button class="mobile-nav-close btn btn-ghost" style="float:right">✕</button>
+    <ul>
+      <li><a href="{{ url_for('marketplace.browse') }}">Browse Phones</a></li>
+      <li><a href="{{ url_for('marketplace.sell') }}">Sell Your Phone</a></li>
+      <li><a href="{{ url_for('repair.services') }}">Repair Services</a></li>
+      <li><a href="{{ url_for('repair.book') }}">Book a Repair</a></li>
+      <li><a href="{{ url_for('main.track_lookup') }}">Track Order / Repair</a></li>
+      <li><a href="{{ url_for('main.buy_sell_exchange') }}">Buy / Sell / Exchange</a></li>
+      <li><a href="{{ url_for('main.about') }}">About Us</a></li>
+      <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+      {% if current_user.is_authenticated %}
+        <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+      {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+        <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>

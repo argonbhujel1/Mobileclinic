@@ -1,0 +1,33 @@
+{% extends "layouts/base.html" %}
+{% block title %}Exchange interests | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem">
+  <h1 style="margin:0">Exchange interests</h1>
+  <a href="{{ url_for('dashboard.seller_add_exchange') }}" class="btn btn-primary btn-sm">+ List phone for exchange</a>
+</div>
+{% if rows %}
+<div style="overflow-x:auto;margin-top:1rem">
+<table class="data-table" style="width:100%;background:#fff;border-radius:12px">
+<thead><tr><th>When</th><th>For listing</th><th>From</th><th>Their phone</th><th>Cash</th><th>Status</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr>
+  <td><small>{{ r.created_at }}</small></td>
+  <td>{{ r.product_title or r.desired_product_id }}</td>
+  <td>{{ r.guest_name }}<br><small>{{ r.guest_mobile }}</small></td>
+  <td>{{ r.offered_brand or '' }} {{ r.offered_model or '' }}
+    <div style="font-size:0.85rem;color:var(--text-muted)">{{ (r.offered_phone_details or '')[:120] }}</div>
+  </td>
+  <td>{{ r.cash_difference or 0 }}</td>
+  <td>{{ r.status }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<p style="color:var(--text-muted);margin-top:1rem">No exchange requests yet.</p>
+{% endif %}
+</div></section>
+{% endblock %}

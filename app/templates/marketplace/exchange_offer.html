@@ -1,0 +1,27 @@
+{% extends "layouts/base.html" %}
+{% block title %}Exchange offer for {{ product.title }} | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:640px">
+<h1>Propose exchange</h1>
+<p style="margin:0.75rem 0 1.25rem;color:var(--text-muted)">You want: <strong>{{ product.title }}</strong>
+  {% if product.exchange_requirements %}<br>Lister wants: {{ product.exchange_requirements }}{% endif %}
+</p>
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group"><label>Your name *</label><input type="text" name="name" class="form-control" required value="{{ current_user.full_name if current_user.is_authenticated else '' }}"></div>
+  <div class="form-group"><label>Mobile *</label><input type="text" name="mobile" class="form-control" required value="{{ current_user.mobile if current_user.is_authenticated else '' }}"></div>
+  <div class="form-group"><label>Email</label><input type="email" name="email" class="form-control" value="{{ current_user.email if current_user.is_authenticated else '' }}"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group"><label>Your phone brand *</label><input type="text" name="offered_brand" class="form-control" required placeholder="e.g. Samsung"></div>
+    <div class="form-group"><label>Model *</label><input type="text" name="offered_model" class="form-control" required placeholder="e.g. S21"></div>
+  </div>
+  <div class="form-group"><label>Condition</label><input type="text" name="offered_condition" class="form-control" placeholder="Good / Excellent / …"></div>
+  <div class="form-group"><label>Details about your phone *</label><textarea name="offered_details" class="form-control" rows="4" required placeholder="Storage, battery, issues, box/charger…"></textarea></div>
+  <div class="form-group"><label>Cash difference you can add (NPR)</label><input type="number" name="cash_difference" class="form-control" min="0" step="1" value="0"></div>
+  <div class="form-group"><label>Photos of your phone</label><input type="file" name="photos" class="form-control" accept="image/*" multiple></div>
+  <div class="form-group"><label>Or image URL</label><input type="url" name="imgbb_url" class="form-control"></div>
+  <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Submit exchange interest</button>
+</form>
+<p style="margin-top:1rem;font-size:0.85rem;color:var(--text-muted)">Seller and admin will be notified. No payment is taken on this form.</p>
+</div></section>
+{% endblock %}

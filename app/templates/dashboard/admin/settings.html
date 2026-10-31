@@ -1,0 +1,113 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Settings | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Site Settings</h1>
+</div>
+<form method="post" enctype="multipart/form-data" style="max-width:640px;margin-top:1.25rem;background:#fff;padding:1.75rem;border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--border)">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <h3 style="margin-bottom:1rem;font-size:1.05rem">Branding</h3>
+  <div class="form-group">
+    <label>Site Logo</label>
+    {% if settings.get('logo_url') %}
+    <div style="margin-bottom:0.75rem">
+      <img src="{{ settings.get('logo_url') }}" alt="Current logo" style="max-height:80px;border-radius:8px;border:1px solid var(--border);padding:6px;background:#fff">
+    </div>
+    {% endif %}
+    <input type="file" name="logo" accept="image/*" class="form-control">
+    <small style="color:var(--text-muted);font-size:0.82rem">PNG or JPG. Local save works without Cloudinary.</small>
+  </div>
+  <div class="form-group">
+    <label>Or paste Logo URL</label>
+    <input type="url" name="logo_url_manual" class="form-control" placeholder="https://...">
+  </div>
+
+  <div class="form-group" style="margin-top:1.25rem">
+    <label>Favicon (browser tab icon)</label>
+    {% if settings.get('favicon_url') %}
+    <div style="margin-bottom:0.75rem">
+      <img src="{{ settings.get('favicon_url') }}" alt="Favicon" style="width:32px;height:32px;object-fit:contain;border:1px solid var(--border);border-radius:6px;padding:4px;background:#fff">
+    </div>
+    {% endif %}
+    <input type="file" name="favicon" accept="image/png,image/x-icon,image/jpeg,image/webp,image/gif,.ico" class="form-control">
+    <small style="color:var(--text-muted);font-size:0.82rem">Recommended: 32×32 or 64×64 PNG/ICO. Applies site-wide (public + admin).</small>
+  </div>
+  <div class="form-group">
+    <label>Or paste Favicon URL</label>
+    <input type="url" name="favicon_url_manual" class="form-control" placeholder="https://...">
+  </div>
+
+  <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0">
+
+  <h3 style="margin-bottom:1rem;font-size:1.05rem">General</h3>
+  <div class="form-group">
+    <label>Site Name</label>
+    <input type="text" name="site_name" class="form-control" value="{{ settings.get('site_name','Mobile Clinic') }}" placeholder="Mobile Clinic Urlabari">
+  </div>
+  <div class="form-group">
+    <label>Tagline</label>
+    <input type="text" name="tagline" class="form-control" value="{{ settings.get('tagline','') }}">
+  </div>
+  <div class="form-group">
+    <label>Primary Color</label>
+    <input type="color" name="theme_primary" class="form-control" value="{{ settings.get('theme_primary','#0f4c81') }}" style="max-width:120px;height:42px;padding:4px">
+  </div>
+  <div class="form-group">
+    <label>Contact Email</label>
+    <input type="email" name="contact_email" class="form-control" value="{{ settings.get('contact_email','') }}">
+  </div>
+  <div class="form-group">
+    <label>Contact Phone</label>
+    <input type="text" name="contact_phone" class="form-control" value="{{ settings.get('contact_phone','') }}">
+  </div>
+  <div class="form-group">
+    <label>WhatsApp Number</label>
+    <input type="text" name="whatsapp_number" class="form-control" value="{{ settings.get('whatsapp_number','') }}">
+  </div>
+  <div class="form-group">
+    <label>Footer About Text</label>
+    <textarea name="footer_about" class="form-control" rows="3">{{ settings.get('footer_about','') }}</textarea>
+  </div>
+
+  
+  <h3 style="margin:1.75rem 0 0.75rem;font-size:1.05rem">Search Console / SEO</h3>
+  <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem">Meta title &amp; favicon Google Search Console मा index / branding का लागि।</p>
+  <div class="form-group">
+    <label>Default meta title (browser tab + Google)</label>
+    <input type="text" name="meta_title" class="form-control" maxlength="70"
+      value="{{ settings.get('meta_title','') }}"
+      placeholder="Mobile Clinic Urlabari | Second-hand Phones & Mobile Repair">
+    <small style="color:var(--text-muted)">~50–60 characters recommended</small>
+  </div>
+  <div class="form-group">
+    <label>Default meta description</label>
+    <textarea name="meta_description" class="form-control" rows="2" maxlength="170"
+      placeholder="Buy & sell used phones, repair with pickup in Urlabari…">{{ settings.get('meta_description','') }}</textarea>
+    <small style="color:var(--text-muted)">~150–160 characters</small>
+  </div>
+  <div class="form-group">
+    <label>Google Search Console verification code</label>
+    <input type="text" name="google_site_verification" class="form-control"
+      value="{{ settings.get('google_site_verification','') }}"
+      placeholder="Paste only the content= value from Google meta tag">
+    <small style="color:var(--text-muted)">Search Console → HTML tag → content="..." बीचको code मात्र</small>
+  </div>
+
+  <h3 style="margin:1.5rem 0 0.75rem;font-size:1.05rem">Social links (footer shows official icons)</h3>
+<p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem">Admin ले link मात्र हाल्ने — Facebook / Instagram official SVG icon footer मा auto देखिन्छ।</p>
+<div class="form-group"><label>Facebook / Messenger link</label>
+<input type="url" name="facebook_url" class="form-control" value="{{ settings.get('facebook_url','') }}" placeholder="https://m.me/yourpage"></div>
+<div class="form-group"><label>Instagram DM / profile link</label>
+<input type="url" name="instagram_url" class="form-control" value="{{ settings.get('instagram_url','') }}" placeholder="https://ig.me/m/username"></div>
+<h3 style="margin:1.5rem 0 0.75rem;font-size:1.05rem">Home page promo video</h3>
+<p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem">Home मा मात्र popup। YouTube / TikTok / Vimeo / direct .mp4 URL। Video load/play भएपछि 5 सेक Skip। Refresh मा फेरि। खाली = बन्द।</p>
+<div class="form-group">
+  <label>Video URL (any platform)</label>
+  <input type="url" name="tiktok_embed_url" class="form-control" value="{{ settings.get('tiktok_embed_url','') }}"
+    placeholder="https://www.youtube.com/watch?v=... or TikTok / .mp4 link">
+  <small style="color:var(--text-muted)">YouTube, TikTok, Vimeo, Facebook video, or direct mp4/webm link</small>
+</div>
+<button type="submit" class="btn btn-primary" style="margin-top:0.5rem">Save Settings</button>
+</form>
+{% endblock %}

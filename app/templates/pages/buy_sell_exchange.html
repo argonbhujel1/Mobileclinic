@@ -1,0 +1,10 @@
+{% extends "layouts/base.html" %}
+{% block title %}Buy Sell Exchange | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+<h1 style="margin-bottom:2rem;text-align:center">Buy, Sell &amp; Exchange</h1>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem">
+<div class="stat-card"><h3>Buy</h3><p style="color:var(--text-muted)">Browse quality second-hand phones.</p><a href="{{ url_for('marketplace.browse') }}" class="btn btn-primary btn-sm" style="margin-top:1rem">Browse</a></div>
+<div class="stat-card"><h3>Sell</h3><p style="color:var(--text-muted)">Become a seller and list your phone.</p><a href="{{ url_for('marketplace.sell') }}" class="btn btn-primary btn-sm" style="margin-top:1rem">Sell</a></div>
+<div class="stat-card"><h3>Exchange</h3><p style="color:var(--text-muted)">Propose an exchange — no commission.</p><a href="{{ url_for('marketplace.exchange_browse') }}" class="btn btn-outline btn-sm" style="margin-top:1rem">Open for exchange</a></div>
+</div></div></section>{% endblock %}

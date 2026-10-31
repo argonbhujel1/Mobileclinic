@@ -1,0 +1,109 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ product.title }} — Buy Used {{ product.brand }} {{ product.model }} | {{ business_name }}{% endblock %}
+{% block meta_description %}{{ product.title }} for NPR {{ "{:,.0f}".format(product.selling_price) }}. {{ product.condition }} condition {{ product.brand }} {{ product.model }} second-hand smartphone. Buy from {{ business_name }} mobile shop Nepal.{% endblock %}
+{% block meta_keywords %}{{ product.brand }}, {{ product.model }}, used {{ product.brand }}, second hand {{ product.model }}, buy {{ product.brand }} Nepal, {{ business_name }}{% endblock %}
+{% block og_type %}product{% endblock %}
+{% block og_image_tags %}
+  {% if images and images[0].cloudinary_url %}
+  <meta property="og:image" content="{{ images[0].cloudinary_url }}">
+  {% elif settings and settings.get('logo_url') %}
+  <meta property="og:image" content="{{ settings.get('logo_url') }}">
+  {% endif %}
+{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title|tojson }},
+  "description": {{ (product.description or product.title)|tojson }},
+  "brand": { "@type": "Brand", "name": {{ (product.brand or '')|tojson }} },
+  "sku": {{ (product.uuid or '')|tojson }},
+  "image": {% if images %}{{ images[0].cloudinary_url|tojson }}{% else %}""{% endif %},
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "NPR",
+    "price": {{ product.selling_price }},
+    "availability": "https://schema.org/{% if product.stock_quantity and product.stock_quantity > 0 %}InStock{% else %}OutOfStock{% endif %}",
+    "url": {{ request.url|tojson }}
+  }
+}
+</script>
+{% endblock %}
+{% block content %}
+
+{% if product.allows_exchange %}
+<div style="margin:1.25rem 0;padding:1rem;background:#f0f9ff;border-radius:12px;border:1px solid #bae6fd">
+  <strong>Open for exchange</strong>
+  {% if product.exchange_requirements %}<p style="margin:0.35rem 0;font-size:0.9rem;color:var(--text-muted)">{{ product.exchange_requirements }}</p>{% endif %}
+  <a href="{{ url_for('marketplace.exchange_offer', product_uuid=product.uuid) }}" class="btn btn-outline btn-sm" style="margin-top:0.5rem">Propose your phone for exchange</a>
+</div>
+{% endif %}
+
+<section class="section"><div class="container">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start">
+  <div>
+    {% if images %}
+    <img src="{{ images[0].cloudinary_url }}" alt="{{ product.title }}" style="width:100%;border-radius:12px;border:1px solid var(--border);object-fit:cover;max-height:420px">
+    {% if images|length > 1 %}
+    <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
+      {% for img in images %}
+      <img src="{{ img.cloudinary_url }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div style="height:320px;background:#e2e8f0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:4rem">📱</div>
+    {% endif %}
+  </div>
+  <div>
+    <h1 style="margin-bottom:0.5rem">{{ product.title }}</h1>
+    <div class="product-price" style="font-size:1.5rem;margin-bottom:0.75rem">NPR {{ "{:,.0f}".format(product.selling_price) }}</div>
+    <p style="color:var(--text-muted)">{{ product.brand }} · {{ product.model }} · {{ product.condition }}</p>
+    <p style="margin-top:1rem">{{ product.description }}</p>
+    <p style="margin-top:0.75rem"><strong>Accessories:</strong> {{ product.accessories or '—' }}</p>
+    <p><strong>Location:</strong> {{ product.location or '—' }}</p>
+    <p><strong>Payment:</strong> {{ product.payment_method|upper }}</p>
+
+    {% if product.seller_name or product.seller_uuid %}
+    <div style="margin-top:1.5rem;padding:1rem;background:#f8fafc;border:1px solid var(--border);border-radius:12px;display:flex;gap:0.85rem;align-items:center">
+      {% if product.seller_photo %}
+      <img src="{{ product.seller_photo }}" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+      {% else %}
+      <div style="width:56px;height:56px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center">👤</div>
+      {% endif %}
+      <div>
+        <div style="font-weight:700">{{ product.seller_shop or product.seller_name or 'Seller' }}</div>
+        {% if product.seller_bio %}<div style="font-size:0.85rem;color:var(--text-muted)">{{ product.seller_bio[:120] }}{% if product.seller_bio|length > 120 %}…{% endif %}</div>{% endif %}
+        {% if product.seller_uuid %}
+        <a href="{{ url_for('marketplace.seller_profile', seller_uuid=product.seller_uuid) }}" style="font-size:0.9rem">View seller profile →</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap">
+      <form method="post" action="{{ url_for('marketplace.cart_add', product_id=product.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-outline">Add to Cart</button>
+      </form>
+      <form method="post" action="{{ url_for('marketplace.buy_now', product_id=product.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-primary">Buy Now</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% if related %}
+<h2 style="margin:3rem 0 1.5rem">Related</h2>
+<div class="product-grid">
+{% for p in related %}
+<a href="{{ url_for('marketplace.detail', uuid=p.uuid) }}" class="product-card">
+  <div class="product-card-img">{% if p.primary_image %}<img src="{{ p.primary_image }}" alt="{{ p.title }}">{% endif %}</div>
+  <div class="product-card-body"><h3>{{ p.title }}</h3><div class="product-price">NPR {{ "{:,.0f}".format(p.selling_price) }}</div></div>
+</a>
+{% endfor %}
+</div>
+{% endif %}
+</div></section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "layouts/base.html" %}
+{% block title %}FAQ | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:720px">
+<h1 style="margin-bottom:1.5rem">Frequently Asked Questions</h1>
+<div style="display:flex;flex-direction:column;gap:1rem">
+<details open style="background:white;padding:1rem 1.15rem;border-radius:10px;box-shadow:var(--shadow)"><summary style="font-weight:600;cursor:pointer">How do I buy a phone?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Browse phones, add to cart or Buy Now, then checkout with COD or QR. For QR, pay at least the minimum amount shown and wait for seller/admin verification.</p></details>
+<details style="background:white;padding:1rem 1.15rem;border-radius:10px;box-shadow:var(--shadow)"><summary style="font-weight:600;cursor:pointer">How do I sell my phone?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Register, apply to become a seller from your dashboard, upload your payment QR, then list the phone with photos and price (and optional min QR amount).</p></details>
+<details style="background:white;padding:1rem 1.15rem;border-radius:10px;box-shadow:var(--shadow)"><summary style="font-weight:600;cursor:pointer">How does exchange work?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Seller/admin marks a listing “Open for exchange” and writes requirements. You open that product, tap Propose exchange, enter your phone details and photos. The lister and admin get a notification. No commission on pure exchange deals as per platform terms.</p></details>
+<details style="background:white;padding:1rem 1.15rem;border-radius:10px;box-shadow:var(--shadow)"><summary style="font-weight:600;cursor:pointer">What payment methods are accepted?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Cash on Delivery (COD) and QR payment where the listing allows. QR uses the seller’s or admin’s QR code.</p></details>
+<details style="background:white;padding:1rem 1.15rem;border-radius:10px;box-shadow:var(--shadow)"><summary style="font-weight:600;cursor:pointer">How does repair tracking work?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Book a repair with pickup address. Admin updates status and can share live GPS on the way. Use Track with your name/mobile/email or the email link.</p></details>
+<details style="background:white;padding:1rem 1.15rem;border-radius:10px;box-shadow:var(--shadow)"><summary style="font-weight:600;cursor:pointer">Seller commission?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Platform commission (typically 8%) applies on successful seller-listed sales. Pay via Admin QR from the seller dashboard. No commission on admin inventory or pure exchanges as configured.</p></details>
+<details style="background:white;padding:1rem 1.15rem;border-radius:10px;box-shadow:var(--shadow)"><summary style="font-weight:600;cursor:pointer">Where is Mobile Clinic based?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Urlabari, Morang, Nepal — serving local pickup, delivery and repair coordination.</p></details>
+</div>
+</div></section>
+{% endblock %}

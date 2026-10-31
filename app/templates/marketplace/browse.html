@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+{% block title %}Browse Phones | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+<h1 style="margin-bottom:1.5rem">Browse Phones</h1>
+<form method="get" class="search-bar" style="margin-bottom:2rem">
+<input type="text" name="q" value="{{ request.args.get('q','') }}" placeholder="Search…">
+<select name="brand"><option value="">All Brands</option>{% for b in brands %}<option value="{{ b.brand }}" {% if request.args.get('brand')==b.brand %}selected{% endif %}>{{ b.brand }}</option>{% endfor %}</select>
+<select name="sort"><option value="newest">Newest</option><option value="price_asc">Price ↑</option><option value="price_desc">Price ↓</option></select>
+<button type="submit" class="btn btn-primary">Filter</button>
+</form>
+<div class="product-grid">
+{% for p in products %}
+<a href="{{ url_for('marketplace.detail', uuid=p.uuid) }}" class="product-card">
+<div class="product-card-img">{% if p.primary_image %}<img src="{{ p.primary_image }}" alt="{{ p.title }}" loading="lazy">{% else %}<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem">📱</div>{% endif %}{% if p.is_featured %}<span class="badge">Featured</span>{% endif %}</div>
+<div class="product-card-body"><h3>{{ p.title }}</h3><div class="product-meta">{{ p.brand }} · {{ p.condition }}</div><div class="product-price">NPR {{ "{:,.0f}".format(p.selling_price) }}</div></div>
+</a>{% else %}<p style="grid-column:1/-1;text-align:center;color:var(--text-muted)">No phones found.</p>{% endfor %}
+</div></div></section>{% endblock %}

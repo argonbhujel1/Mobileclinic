@@ -1,0 +1,88 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Sellers | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Sellers</h1>
+  <span style="color:var(--text-muted);font-size:0.9rem">{{ sellers|length }} sellers</span>
+</div>
+
+{% if applications %}
+<h2 style="font-size:1.1rem;margin:1.5rem 0 0.75rem">Pending Applications ({{ applications|length }})</h2>
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Username</th>
+        <th>Applied</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in applications %}
+      <tr>
+        <td><strong>{{ a.full_name or '—' }}</strong></td>
+        <td>{{ a.email or '—' }}</td>
+        <td>{{ a.mobile or '—' }}</td>
+        <td>{{ a.requested_username or '—' }}</td>
+        <td>{{ a.created_at or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<h2 style="font-size:1.1rem;margin:1.5rem 0 0.75rem">All Sellers</h2>
+{% if sellers %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Mobile</th>
+        <th>Active</th>
+        <th>Joined</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in sellers %}
+      <tr>
+        <td>{{ s.id }}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            {% if s.profile_photo_url %}<img src="{{ s.profile_photo_url }}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">{% else %}<div style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:0.75rem">👤</div>{% endif %}
+            <strong>{{ s.full_name or '—' }}</strong>
+          </div>
+        </td>
+        <td>{{ s.email or '—' }}</td>
+        <td>{{ s.seller_username or '—' }}</td>
+        <td>{{ s.mobile or '—' }}</td>
+        <td>
+          {% if s.is_active %}
+            <span class="badge badge-success">Active</span>
+          {% else %}
+            <span class="badge badge-muted">Inactive</span>
+          {% endif %}
+        </td>
+        <td>{{ s.created_at or '—' }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.seller_toggle', user_id=s.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline btn-sm">{% if s.is_active %}Disable{% else %}Enable{% endif %}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">No sellers yet.</div>
+{% endif %}
+{% endblock %}

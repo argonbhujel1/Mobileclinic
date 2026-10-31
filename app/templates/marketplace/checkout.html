@@ -1,0 +1,74 @@
+{% extends "layouts/base.html" %}
+{% block title %}Checkout | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:640px">
+<h1 style="margin-bottom:1rem">Checkout</h1>
+<div style="background:#fff;padding:1rem 1.25rem;border-radius:10px;border:1px solid var(--border);margin-bottom:1.25rem">
+  <p style="margin:0">Order total: <strong>NPR {{ "{:,.0f}".format(total) }}</strong></p>
+  {% if min_qr_total %}
+  <p style="margin:0.4rem 0 0;font-size:0.95rem;color:var(--text-muted)">Minimum QR payment: <strong style="color:var(--primary)">NPR {{ "{:,.0f}".format(min_qr_total) }}</strong></p>
+  {% endif %}
+  <ul style="margin:0.75rem 0 0;padding-left:1.1rem;font-size:0.9rem;color:var(--text-muted)">
+    {% for p in items %}
+    <li>{{ p.title }} × {{ p.qty }} — NPR {{ "{:,.0f}".format(p.subtotal) }}{% if p.min_qr_line %} (min QR NPR {{ "{:,.0f}".format(p.min_qr_line) }}){% endif %}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group"><label>Full Name</label><input type="text" name="name" class="form-control" required value="{{ current_user.full_name if current_user.is_authenticated else '' }}"></div>
+  <div class="form-group"><label>Mobile</label><input type="tel" name="mobile" class="form-control" required value="{{ current_user.mobile if current_user.is_authenticated else '' }}"></div>
+  <div class="form-group"><label>Email</label><input type="email" name="email" class="form-control" required value="{{ current_user.email if current_user.is_authenticated else '' }}"></div>
+  <div class="form-group"><label>Delivery Address</label><textarea name="address" class="form-control" rows="3" required></textarea></div>
+
+  <div class="form-group">
+    <label>Payment Method</label>
+    <select name="payment_method" id="payment_method" class="form-control">
+      <option value="cod">Cash on Delivery (COD)</option>
+      <option value="qr">QR Payment</option>
+    </select>
+  </div>
+
+  <div id="qr-panel" style="display:none;background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
+    <h3 style="font-size:1.05rem;margin-bottom:0.75rem">Pay via QR</h3>
+    {% if admin_qr and admin_qr.cloudinary_url %}
+    <div style="text-align:center;margin-bottom:1rem">
+      <img src="{{ admin_qr.cloudinary_url }}" alt="Payment QR" style="max-width:240px;border-radius:8px;border:1px solid var(--border);background:#fff;padding:8px">
+      {% if admin_qr.label %}<p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.4rem">{{ admin_qr.label }}</p>{% endif %}
+    <p style="font-size:0.82rem;color:var(--text-muted)">Scan this QR to pay the seller / shop for this order.</p>
+    </div>
+    {% else %}
+    <p style="color:var(--danger);margin-bottom:0.75rem">Admin QR is not set yet. Please choose COD or contact the shop.</p>
+    {% endif %}
+    <p style="font-size:0.9rem;margin-bottom:0.75rem">Scan the QR and pay <strong>at least NPR {{ "{:,.0f}".format(min_qr_total or 0) }}</strong>. Then enter the amount you paid and the transaction reference.</p>
+    <div class="form-group">
+      <label>Amount paid (NPR) *</label>
+      <input type="number" name="qr_paid_amount" class="form-control" min="1" step="1" placeholder="{{ '{:,.0f}'.format(min_qr_total or 0) }}">
+    </div>
+    <div class="form-group">
+      <label>Transaction / Reference ID *</label>
+      <input type="text" name="qr_reference" class="form-control" placeholder="e.g. Esewa/Khalti/Bank ref">
+    </div>
+    <div class="form-group">
+      <label>Payment screenshot (optional)</label>
+      <input type="file" name="qr_receipt" class="form-control" accept="image/*">
+    </div>
+    <p style="font-size:0.82rem;color:var(--text-muted)">Order confirms only after admin verifies your QR payment.</p>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Place Order</button>
+</form>
+</div></section>
+{% endblock %}
+{% block extra_js %}
+<script>
+(function(){
+  const sel = document.getElementById('payment_method');
+  const panel = document.getElementById('qr-panel');
+  function sync(){ panel.style.display = sel.value === 'qr' ? 'block' : 'none'; }
+  sel.addEventListener('change', sync);
+  sync();
+})();
+</script>
+{% endblock %}

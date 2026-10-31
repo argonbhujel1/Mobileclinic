@@ -1,0 +1,31 @@
+{% extends "layouts/base.html" %}
+{% block title %}Customer Dashboard | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+<h1 style="margin-bottom:1.5rem">Welcome, {{ current_user.full_name }}</h1>
+<div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem">
+<a href="{{ url_for('dashboard.profile') }}" class="btn btn-outline btn-sm">Profile</a>
+<a href="{{ url_for('main.track_lookup') }}" class="btn btn-outline btn-sm">Track Order / Repair</a>
+<a href="{{ url_for('dashboard.be_seller') }}" class="btn btn-primary btn-sm">Be a Seller</a>
+<a href="{{ url_for('dashboard.change_password') }}" class="btn btn-ghost btn-sm">Change Password</a>
+</div>
+<h2 style="margin-bottom:1rem">My Orders</h2>
+{% for o in orders %}
+<div style="background:white;padding:1rem;border-radius:8px;margin-bottom:0.5rem;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+  <div><strong>{{ o.order_id }}</strong> — NPR {{ "{:,.0f}".format(o.total_amount or 0) }} · {{ o.status }}</div>
+  {% if o.tracking_token %}
+  <a href="{{ url_for('marketplace.track', order_id=o.order_id, token=o.tracking_token) }}" class="btn btn-outline btn-sm">Track</a>
+  {% endif %}
+</div>
+{% else %}<p style="color:var(--text-muted)">No orders yet.</p>{% endfor %}
+
+<h2 style="margin:2rem 0 1rem">My Repairs</h2>
+{% for r in repairs %}
+<div style="background:white;padding:1rem;border-radius:8px;margin-bottom:0.5rem;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+  <div><strong>{{ r.ticket_id }}</strong> — {{ r.phone_brand }} {{ r.phone_model }} · {{ r.status|replace('_',' ') }}</div>
+  {% if r.tracking_token %}
+  <a href="{{ url_for('repair.track', ticket_id=r.ticket_id, token=r.tracking_token) }}" class="btn btn-outline btn-sm">Track repair</a>
+  {% endif %}
+</div>
+{% else %}<p style="color:var(--text-muted)">No repairs yet. <a href="{{ url_for('repair.book') }}">Book a repair</a></p>{% endfor %}
+</div></section>{% endblock %}

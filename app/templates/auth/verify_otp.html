@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+{% block title %}Verify Email | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">✉️</div>
+      <h1>Verify your email</h1>
+      <p class="subtitle">We sent a 6-digit code to <strong>{{ email }}</strong></p>
+    </div>
+    <form method="post" class="auth-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label for="otp">OTP Code</label>
+        <input type="text" id="otp" name="otp" class="form-control otp-input" required maxlength="6" pattern="[0-9]{6}" placeholder="000000" inputmode="numeric" autocomplete="one-time-code">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Verify & Continue</button>
+    </form>
+    <p class="auth-footer">Didn't receive the code? Check spam or <a href="{{ url_for('auth.register') }}">register again</a></p>
+  </div>
+</section>
+{% endblock %}

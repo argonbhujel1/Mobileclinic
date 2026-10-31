@@ -1,0 +1,30 @@
+{% extends "layouts/base.html" %}
+{% block title %}Login | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">📱</div>
+      <h1>Welcome back</h1>
+      <p class="subtitle">Sign in to your Mobile Clinic account</p>
+    </div>
+    <form method="post" class="auth-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label for="email">Email or Username</label>
+        <input type="text" id="email" name="email" class="form-control" required autofocus placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-control" required placeholder="••••••••">
+      </div>
+      <div class="form-group form-check">
+        <label><input type="checkbox" name="remember"> Remember me</label>
+        <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+    <p class="auth-footer">Don't have an account? <a href="{{ url_for('auth.register') }}">Create one</a></p>
+  </div>
+</section>
+{% endblock %}
