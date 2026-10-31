@@ -1,0 +1,67 @@
+{% extends "layouts/base.html" %}
+{% block title %}Privacy Policy | {{ business_name }}{% endblock %}
+{% block meta_robots %}index, follow{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:800px">
+<article class="legal-doc" style="line-height:1.7">
+<h1>Privacy Policy</h1>
+<p style="color:var(--text-muted)"><em>Last updated: October 2026 · Applies to {{ business_name }} (Urlabari, Morang, Nepal)</em></p>
+
+<h2>1. Who we are</h2>
+<p>{{ business_name }} operates a marketplace for second-hand smartphones and a mobile repair service with optional pickup and delivery in and around Urlabari, Morang, and other areas of Nepal we serve. This Privacy Policy explains what personal data we collect, why we collect it, how we use it, and your rights.</p>
+
+<h2>2. Information we collect</h2>
+<ul>
+  <li><strong>Account data:</strong> full name, email address, mobile number, password (stored as a secure hash), optional profile photo, address, and for sellers shop name, bio, and payment QR image.</li>
+  <li><strong>Order data:</strong> delivery address, order items, payment method, payment reference, optional payment proof image, and communication related to the order.</li>
+  <li><strong>Repair data:</strong> phone brand/model, problem description, pickup address, map coordinates you choose, and status history of the repair ticket.</li>
+  <li><strong>Technical data:</strong> approximate device/browser information, IP address logs on our hosting provider, and cookies needed for login sessions and security (CSRF protection).</li>
+  <li><strong>Location during active trips only:</strong> when an admin or assigned staff starts a pickup or delivery trip and chooses to share GPS, live coordinates are stored for that trip so you and the team can track progress. Tracking is not continuous outside active trips.</li>
+</ul>
+
+<h2>3. How we use your information</h2>
+<ul>
+  <li>To create and manage your account, verify email where required, and provide customer, seller, or admin access.</li>
+  <li>To process orders, repairs, payments verification, and delivery or pickup coordination.</li>
+  <li>To send transactional messages (order/repair confirmation, OTP, credentials) via email when configured.</li>
+  <li>To show relevant seller profile information on product pages when you list or buy phones.</li>
+  <li>To improve site security, prevent fraud, and comply with applicable law in Nepal.</li>
+</ul>
+
+<h2>4. Legal basis and consent</h2>
+<p>By creating an account, placing an order, or booking a repair, you consent to processing of the data needed to perform that service. You may request correction or deletion of account data subject to legal retention needs (for example completed order records).</p>
+
+<h2>5. Sharing of data</h2>
+<p>We do <strong>not sell</strong> your personal data. We may share limited data with:</p>
+<ul>
+  <li>Payment verification context visible to the relevant seller or admin for orders involving their listings.</li>
+  <li>Hosting, database (e.g. Turso), email (SMTP), and image hosting (e.g. Cloudinary) providers acting as processors under their terms.</li>
+  <li>Authorities if required by law or to protect rights, safety, or property.</li>
+</ul>
+
+<h2>6. Images and media</h2>
+<p>Product photos, profile photos, payment proofs, and QR codes you upload may be stored on third-party cloud storage. Do not upload images of unrelated third parties without permission. IMEI/serial fields are intended for internal operational use and should not be published publicly.</p>
+
+<h2>7. Cookies and sessions</h2>
+<p>We use essential session cookies so you stay logged in and so forms remain secure. We do not use these cookies to sell advertising profiles. Clearing cookies will log you out.</p>
+
+<h2>8. Data retention</h2>
+<p>Account and transaction records are kept while your account is active and for a reasonable period afterward for dispute resolution, accounting, and legal compliance. You may request account closure; some anonymised or legally required records may remain.</p>
+
+<h2>9. Security</h2>
+<p>We use password hashing, HTTPS in production, role-based access (customer, seller, admin), and CSRF protection on forms. No method of transmission over the internet is 100% secure; please use a strong unique password.</p>
+
+<h2>10. Children’s privacy</h2>
+<p>Our services are directed to adults capable of entering into transactions. If you believe a minor has provided data, contact us to remove it.</p>
+
+<h2>11. Your rights</h2>
+<p>Subject to applicable law, you may request access, correction, or deletion of personal data, or withdraw consent where processing is consent-based (this may limit service). Contact us using the details on our Contact page.</p>
+
+<h2>12. Changes</h2>
+<p>We may update this policy from time to time. Continued use of the site after changes constitutes acceptance of the updated policy. The “Last updated” date will change when we revise this page.</p>
+
+<h2>13. Contact</h2>
+<p>For privacy questions: email <strong>{{ business_email }}</strong> or phone <strong>{{ business_phone }}</strong>. Business location focus: Urlabari, Morang, Nepal.</p>
+</article>
+</div></section>
+{% endblock %}

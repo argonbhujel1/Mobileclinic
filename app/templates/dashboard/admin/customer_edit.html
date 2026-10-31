@@ -1,0 +1,37 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Edit Customer | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Edit Customer</h1>
+  <a href="{{ url_for('admin.customers') }}" class="btn btn-ghost btn-sm">← Back</a>
+</div>
+<form method="post" style="max-width:560px;margin-top:1.25rem;background:#fff;padding:1.75rem;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow)">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group">
+    <label>Full Name *</label>
+    <input type="text" name="full_name" class="form-control" required value="{{ user.full_name or '' }}">
+  </div>
+  <div class="form-group">
+    <label>Email *</label>
+    <input type="email" name="email" class="form-control" required value="{{ user.email or '' }}">
+  </div>
+  <div class="form-group">
+    <label>Mobile</label>
+    <input type="text" name="mobile" class="form-control" value="{{ user.mobile or '' }}">
+  </div>
+  <div class="form-group">
+    <label>Address</label>
+    <textarea name="address" class="form-control" rows="2">{{ user.address or '' }}</textarea>
+  </div>
+  <div class="form-group" style="display:flex;gap:1.5rem;flex-wrap:wrap">
+    <label><input type="checkbox" name="is_active" {% if user.is_active %}checked{% endif %}> Active</label>
+    <label><input type="checkbox" name="is_verified" {% if user.is_verified %}checked{% endif %}> Verified</label>
+    <label><input type="checkbox" name="restricted" {% if user.restricted %}checked{% endif %}> Restricted</label>
+  </div>
+  <div class="form-group">
+    <label>Restriction reason</label>
+    <input type="text" name="restriction_reason" class="form-control" value="{{ user.restriction_reason or '' }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Save Customer</button>
+</form>
+{% endblock %}

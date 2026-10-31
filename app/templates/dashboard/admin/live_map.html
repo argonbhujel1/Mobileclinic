@@ -1,0 +1,185 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Live Map | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Live Pickup / Delivery Map</h1>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0">
+      🛵 = you (admin) · 📍 = customer pickup. Share GPS then open directions.
+    </p>
+  </div>
+  <span style="color:var(--text-muted);font-size:0.9rem">{{ trips|length }} active</span>
+</div>
+
+{% if my_trips %}
+<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem">
+  <strong>Your active trip(s)</strong>
+  <ul style="margin:0.5rem 0 0;padding-left:1.1rem">
+    {% for t in my_trips %}
+    <li>
+      {{ t.ticket_id }} — {{ t.trip_type }} → {{ t.destination_address or t.pickup_address or 'customer' }}
+      {% if t.guest_mobile %} · {{ t.guest_mobile }}{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  <p id="gps-status" style="margin:0.75rem 0 0;font-size:0.9rem;color:var(--text-muted)">GPS: not sharing yet</p>
+  <p id="route-info" style="margin:0.35rem 0 0;font-size:0.9rem;color:var(--text-muted)"></p>
+  <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.65rem">
+    <button type="button" id="btn-share-gps" class="btn btn-primary btn-sm">Start sharing my location</button>
+    <button type="button" id="btn-stop-gps" class="btn btn-ghost btn-sm" style="display:none">Stop GPS</button>
+    <a id="btn-directions" class="btn btn-outline btn-sm" href="#" target="_blank" rel="noopener" style="display:none">Get directions (Google Maps)</a>
+  </div>
+</div>
+{% else %}
+<p style="margin-bottom:1rem;color:var(--text-muted)">
+  No active trip. On <a href="{{ url_for('admin.repairs') }}">Repairs</a> set status to
+  <strong>Admin going for pickup</strong> first.
+</p>
+{% endif %}
+
+<div id="admin-live-map" class="map-container" style="height:520px;border-radius:12px;overflow:hidden;border:1px solid var(--border)" data-tile-url="{{ map_tile_url }}"></div>
+
+{% if trips %}
+<div class="table-wrap" style="margin-top:1.25rem">
+  <table class="data-table">
+    <thead>
+      <tr><th>Ticket</th><th>Type</th><th>Customer</th><th>Destination</th><th>Last GPS</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for t in trips %}
+      <tr>
+        <td><strong>{{ t.ticket_id }}</strong><br><small>{{ t.phone_brand }} {{ t.phone_model }}</small></td>
+        <td>{{ t.trip_type }}</td>
+        <td>{{ t.guest_name or '—' }}{% if t.guest_mobile %}<br><small>{{ t.guest_mobile }}</small>{% endif %}</td>
+        <td style="max-width:180px">{{ t.destination_address or t.pickup_address or '—' }}</td>
+        <td>{% if t.last_lat %}{{ "%.4f"|format(t.last_lat) }}, {{ "%.4f"|format(t.last_lng) }}{% else %}<span style="color:var(--text-muted)">—</span>{% endif %}</td>
+        <td>
+          {% set dlat = t.destination_lat or t.pickup_latitude %}
+          {% set dlng = t.destination_lng or t.pickup_longitude %}
+          {% if dlat and dlng %}
+          <a class="btn btn-outline btn-sm" target="_blank" rel="noopener"
+             href="https://www.google.com/maps/dir/?api=1&destination={{ dlat }},{{ dlng }}&travelmode=driving">Directions</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (!window.MCMaps) return;
+  const map = MCMaps.createMap('admin-live-map', { zoom: 13 });
+  const trips = {{ trips|tojson }};
+  const myTrips = {{ my_trips|tojson }};
+  const bounds = [];
+  const bikeMarkers = {};
+  const destMarkers = {};
+  let routeLayer = null;
+  let lastAdmin = null;
+
+  function destOf(t) {
+    return {
+      lat: t.destination_lat || t.pickup_latitude,
+      lng: t.destination_lng || t.pickup_longitude,
+      addr: t.destination_address || t.pickup_address || ''
+    };
+  }
+
+  trips.forEach(t => {
+    const d = destOf(t);
+    if (d.lat && d.lng) {
+      destMarkers[t.uuid] = L.marker([d.lat, d.lng], { icon: MCMaps.userIcon() })
+        .addTo(map)
+        .bindPopup('📍 Customer / pickup<br>' + (t.ticket_id || '') + '<br>' + d.addr);
+      bounds.push([d.lat, d.lng]);
+    }
+    if (t.last_lat && t.last_lng) {
+      bikeMarkers[t.uuid] = L.marker([t.last_lat, t.last_lng], { icon: MCMaps.bikeIcon() })
+        .addTo(map)
+        .bindPopup('🛵 Admin<br>' + (t.ticket_id || ''));
+      bounds.push([t.last_lat, t.last_lng]);
+    }
+  });
+  if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+
+  const statusEl = document.getElementById('gps-status');
+  const routeInfo = document.getElementById('route-info');
+  const btnStart = document.getElementById('btn-share-gps');
+  const btnStop = document.getElementById('btn-stop-gps');
+  const btnDir = document.getElementById('btn-directions');
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+  let watchId = null;
+
+  async function updateRoute(adminLat, adminLng) {
+    const t = myTrips[0];
+    if (!t) return;
+    const d = destOf(t);
+    if (!d.lat || !d.lng) return;
+    routeLayer = await MCMaps.drawRoute(map, adminLat, adminLng, d.lat, d.lng, routeLayer);
+    if (btnDir) {
+      btnDir.href = MCMaps.googleMapsDirectionsUrl(adminLat, adminLng, d.lat, d.lng);
+      btnDir.style.display = 'inline-flex';
+    }
+    if (routeLayer && routeLayer._routeMeta && routeInfo) {
+      const km = (routeLayer._routeMeta.distance_m / 1000).toFixed(1);
+      const min = Math.round(routeLayer._routeMeta.duration_s / 60);
+      routeInfo.textContent = 'Route: ~' + km + ' km · ~' + min + ' min';
+    }
+    map.fitBounds([[adminLat, adminLng], [d.lat, d.lng]], { padding: [50, 50] });
+  }
+
+  function postLocation(pos) {
+    const { latitude, longitude, accuracy } = pos.coords;
+    lastAdmin = { lat: latitude, lng: longitude };
+    if (statusEl) statusEl.textContent = 'GPS: ' + latitude.toFixed(5) + ', ' + longitude.toFixed(5) + ' (sharing)';
+    myTrips.forEach(t => {
+      if (bikeMarkers[t.uuid]) bikeMarkers[t.uuid].setLatLng([latitude, longitude]);
+      else bikeMarkers[t.uuid] = L.marker([latitude, longitude], { icon: MCMaps.bikeIcon() }).addTo(map).bindPopup('🛵 You');
+      fetch('{{ url_for("repair.location_update") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
+        body: JSON.stringify({ trip_id: t.uuid, latitude, longitude, accuracy })
+      }).catch(() => {});
+    });
+    updateRoute(latitude, longitude);
+  }
+
+  if (btnStart) {
+    btnStart.addEventListener('click', function() {
+      if (!navigator.geolocation) { statusEl.textContent = 'GPS not supported'; return; }
+      statusEl.textContent = 'Requesting GPS…';
+      watchId = navigator.geolocation.watchPosition(postLocation, function(err) {
+        statusEl.textContent = 'GPS error: ' + err.message;
+      }, { enableHighAccuracy: true, maximumAge: 3000, timeout: 20000 });
+      btnStart.style.display = 'none';
+      if (btnStop) btnStop.style.display = 'inline-flex';
+    });
+  }
+  if (btnStop) {
+    btnStop.addEventListener('click', function() {
+      if (watchId != null) navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+      btnStop.style.display = 'none';
+      if (btnStart) btnStart.style.display = 'inline-flex';
+      if (statusEl) statusEl.textContent = 'GPS sharing stopped';
+    });
+  }
+
+  // Prefill directions from last known admin GPS if any
+  if (myTrips.length) {
+    const t = myTrips[0];
+    const d = destOf(t);
+    if (t.last_lat && d.lat) {
+      updateRoute(t.last_lat, t.last_lng);
+    } else if (d.lat && btnDir) {
+      btnDir.href = MCMaps.googleMapsDirectionsUrl(null, null, d.lat, d.lng);
+      btnDir.style.display = 'inline-flex';
+    }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Audit Logs | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Audit Logs</h1>
+  <span style="color:var(--text-muted);font-size:0.9rem">{{ logs|length }} shown</span>
+</div>
+{% if logs %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Action</th>
+        <th>Entity</th>
+        <th>User</th>
+        <th>Details</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td><strong>{{ log.action or '—' }}</strong></td>
+        <td>{{ log.entity_type or '—' }} {% if log.entity_id %}#{{ log.entity_id }}{% endif %}</td>
+        <td>{{ log.user_id or '—' }}</td>
+        <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ log.details or log.meta or '—' }}</td>
+        <td>{{ log.created_at or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">No audit logs yet.</div>
+{% endif %}
+{% endblock %}

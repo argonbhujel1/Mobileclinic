@@ -1,0 +1,45 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Admin Dashboard | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Admin Dashboard</h1>
+</div>
+<div class="stat-grid" style="margin:1.5rem 0">
+  <div class="stat-card"><div class="label">Products</div><div class="value">{{ stats.products }}</div></div>
+  <div class="stat-card"><div class="label">Orders</div><div class="value">{{ stats.orders }}</div></div>
+  <div class="stat-card"><div class="label">Customers</div><div class="value">{{ stats.customers }}</div></div>
+  <div class="stat-card"><div class="label">Sellers</div><div class="value">{{ stats.sellers }}</div></div>
+  <div class="stat-card"><div class="label">Active Repairs</div><div class="value">{{ stats.repairs }}</div></div>
+  <div class="stat-card"><div class="label">Pending Commission</div><div class="value">NPR {{ "{:,.0f}".format(stats.pending_commissions or 0) }}</div></div>
+</div>
+<h2 style="font-size:1.15rem;margin-bottom:0.75rem">Recent Orders</h2>
+{% if recent_orders %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in recent_orders %}
+      <tr>
+        <td><strong>{{ o.order_id or o.id }}</strong></td>
+        <td>NPR {{ "{:,.0f}".format(o.total_amount or 0) }}</td>
+        <td>
+          {% set st = (o.status or '')|lower %}
+          <span class="badge {% if st in ['completed','delivered','paid'] %}badge-success{% elif st in ['pending','processing'] %}badge-warning{% elif st in ['cancelled','failed'] %}badge-danger{% else %}badge-info{% endif %}">{{ o.status or '—' }}</span>
+        </td>
+        <td>{{ o.created_at or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">No orders yet.</div>
+{% endif %}
+{% endblock %}

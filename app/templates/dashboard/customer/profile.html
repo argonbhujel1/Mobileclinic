@@ -1,0 +1,50 @@
+{% extends "layouts/base.html" %}
+{% block title %}My Profile | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:560px">
+<h1 style="margin-bottom:0.5rem">My Profile</h1>
+<p style="color:var(--text-muted);margin-bottom:1.25rem;font-size:0.9rem">
+  {% if current_user.role in ['seller','admin'] %}
+  Your photo &amp; shop details appear on product pages when buyers view your listings.
+  {% else %}
+  Your photo is shown to admin when you place orders or book repairs.
+  {% endif %}
+</p>
+
+{% if user.profile_photo_url %}
+<img src="{{ user.profile_photo_url }}" alt="Profile" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:1rem;border:3px solid var(--border)">
+{% else %}
+<div style="width:96px;height:96px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:1rem">👤</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group"><label>Full Name</label><input type="text" name="full_name" class="form-control" value="{{ user.full_name or '' }}" required></div>
+  <div class="form-group"><label>Mobile</label><input type="tel" name="mobile" class="form-control" value="{{ user.mobile or '' }}"></div>
+  <div class="form-group"><label>Address</label><textarea name="address" class="form-control" rows="2">{{ user.address or '' }}</textarea></div>
+  {% if current_user.role in ['seller','admin'] %}
+  <div class="form-group"><label>Shop / Display Name</label><input type="text" name="shop_name" class="form-control" value="{{ user.shop_name or '' }}" placeholder="Shown on product seller card"></div>
+  <div class="form-group"><label>Bio / About</label><textarea name="bio" class="form-control" rows="3" placeholder="Short intro for buyers">{{ user.bio or '' }}</textarea></div>
+  {% else %}
+  <input type="hidden" name="shop_name" value=""><input type="hidden" name="bio" value="">
+  {% endif %}
+  <div class="form-group"><label>Profile Photo</label><input type="file" name="photo" accept="image/*" class="form-control"></div>
+  <div class="form-group"><label>Or image URL</label><input type="url" name="imgbb_url" class="form-control" placeholder="https://..."></div>
+
+  {% if current_user.role in ['seller','admin'] %}
+  <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0">
+  <h3 style="font-size:1.05rem;margin-bottom:0.75rem">Payment QR (for your product orders)</h3>
+  <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.75rem">Buyers choosing QR payment on your listings will see this QR. Upload eSewa / Khalti / bank QR.</p>
+  {% if user.seller_qr_url %}
+  <div style="margin-bottom:0.75rem">
+    <img src="{{ user.seller_qr_url }}" alt="Your QR" style="max-width:180px;border-radius:8px;border:1px solid var(--border);padding:6px;background:#fff">
+  </div>
+  {% endif %}
+  <div class="form-group"><label>Upload QR image</label><input type="file" name="seller_qr" accept="image/*" class="form-control"></div>
+  <div class="form-group"><label>Or QR image URL</label><input type="url" name="seller_qr_url_manual" class="form-control" placeholder="https://..."></div>
+  {% endif %}
+
+  <button type="submit" class="btn btn-primary">Save Profile</button>
+</form>
+</div></section>
+{% endblock %}

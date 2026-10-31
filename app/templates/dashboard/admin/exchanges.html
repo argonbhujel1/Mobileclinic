@@ -1,0 +1,25 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Exchanges | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header"><h1>Exchange requests</h1>
+  <a href="{{ url_for('admin.exchange_phone_add') }}" class="btn btn-primary btn-sm">+ Add exchange phone</a>
+</div>
+{% if rows %}
+<div class="table-wrap"><table class="data-table">
+<thead><tr><th>Date</th><th>Listing</th><th>Customer</th><th>Offered phone</th><th>Cash</th><th>Status</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr>
+<td>{{ r.created_at }}</td>
+<td>{{ r.product_title or r.desired_product_id }}</td>
+<td>{{ r.guest_name }}<br><small>{{ r.guest_mobile }} {{ r.guest_email or '' }}</small></td>
+<td>{{ r.offered_brand or '' }} {{ r.offered_model or '' }}<br><small>{{ (r.offered_phone_details or '')[:100] }}</small></td>
+<td>{{ r.cash_difference or 0 }}</td>
+<td>{{ r.status }}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}
+<div class="empty-state">No exchange requests yet.</div>
+{% endif %}
+{% endblock %}

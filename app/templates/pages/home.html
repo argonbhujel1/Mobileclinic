@@ -1,0 +1,353 @@
+{% extends "layouts/base.html" %}
+{% block title %}Mobile Clinic Urlabari | Second-hand Phones & Mobile Repair{% endblock %}
+{% block meta_description %}Mobile Clinic — Urlabari, Morang. Buy & sell second-hand smartphones, phone exchange, and mobile repair with pickup & delivery. Trusted used iPhone, Samsung & more in Nepal.{% endblock %}
+{% block og_title %}Mobile Clinic Urlabari | Second-hand Phones & Mobile Repair{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-text">
+      <div class="hero-badge">✓ Mobile Clinic · Urlabari, Morang, Nepal</div>
+      <h1><span style="color:var(--primary-light)">Mobile Clinic Urlabari</span> — Buy, Sell &amp; Repair Smartphones</h1>
+      <p>Mobile Clinic is your local shop in <strong>Urlabari</strong> for quality second-hand phones, fair exchange, and professional mobile repair with pickup &amp; delivery across Morang and nearby Nepal.</p>
+      <div class="hero-actions">
+        <a href="{{ url_for('marketplace.browse') }}" class="btn btn-primary btn-lg">Browse Phones</a>
+        <a href="{{ url_for('repair.book') }}" class="btn btn-outline btn-lg">Book a Repair</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      {% if settings.get('logo_url') %}
+      <div class="hero-logo-wrap">
+        <img src="{{ settings.get('logo_url') }}" alt="{{ business_name }}">
+      </div>
+      {% else %}
+      <div class="phone-float">
+        <div class="phone-screen">
+          <span style="font-size:2.5rem">📱</span>
+          <span>Mobile Clinic</span>
+          <small style="font-weight:500;color:var(--text-muted)">Quality Phones</small>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="container">
+    <form class="search-bar" action="{{ url_for('marketplace.browse') }}" method="get">
+      <input type="text" name="q" placeholder="Search brand, model…">
+      <select name="brand">
+        <option value="">All Brands</option>
+        {% for b in brands %}<option value="{{ b.brand }}">{{ b.brand }}</option>{% endfor %}
+      </select>
+      <select name="condition">
+        <option value="">Condition</option>
+        <option value="Like New">Like New</option>
+        <option value="Excellent">Excellent</option>
+        <option value="Good">Good</option>
+        <option value="Fair">Fair</option>
+      </select>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div>
+</section>
+
+{% if featured %}
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Featured <span>Products</span></h2>
+    <div class="product-grid">
+      {% for p in featured %}
+      <a href="{{ url_for('marketplace.detail', uuid=p.uuid) }}" class="product-card reveal">
+        <div class="product-card-img">
+          {% if p.primary_image %}<img src="{{ p.primary_image }}" alt="{{ p.title }}" loading="lazy">{% else %}<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;background:var(--bg)">📱</div>{% endif %}
+          <span class="badge">Featured</span>
+        </div>
+        <div class="product-card-body">
+          <h3>{{ p.title }}</h3>
+          <div class="product-meta">{{ p.brand }} · {{ p.ram or '' }} · {{ p.storage or '' }} · {{ p.condition }}</div>
+          <div class="product-price">NPR {{ "{:,.0f}".format(p.selling_price) }}{% if p.is_negotiable %} <small>Negotiable</small>{% endif %}</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" style="background:white">
+  <div class="container">
+    <h2 class="section-title">Latest <span>Listings</span></h2>
+    <div class="product-grid">
+      {% for p in latest %}
+      <a href="{{ url_for('marketplace.detail', uuid=p.uuid) }}" class="product-card reveal">
+        <div class="product-card-img">
+          {% if p.primary_image %}<img src="{{ p.primary_image }}" alt="{{ p.title }}" loading="lazy">{% else %}<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;background:var(--bg)">📱</div>{% endif %}
+        </div>
+        <div class="product-card-body">
+          <h3>{{ p.title }}</h3>
+          <div class="product-meta">{{ p.brand }} · {{ p.condition }}</div>
+          <div class="product-price">NPR {{ "{:,.0f}".format(p.selling_price) }}</div>
+        </div>
+      </a>
+      {% else %}
+      <p style="grid-column:1/-1;text-align:center;color:var(--text-muted)">No listings yet. Check back soon!</p>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <a href="{{ url_for('marketplace.browse') }}" class="btn btn-outline">View All Phones</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">How It <span>Works</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;text-align:center">
+      <div class="stat-card reveal">
+        <div style="font-size:2rem;margin-bottom:0.5rem">1️⃣</div>
+        <h3>Browse or Book</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem">Find a phone or request a repair with pickup.</p>
+      </div>
+      <div class="stat-card reveal">
+        <div style="font-size:2rem;margin-bottom:0.5rem">2️⃣</div>
+        <h3>Pay Securely</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem">COD or QR payment. Guest checkout available.</p>
+      </div>
+      <div class="stat-card reveal">
+        <div style="font-size:2rem;margin-bottom:0.5rem">3️⃣</div>
+        <h3>Track Live</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem">Follow your order or repair trip on the map.</p>
+      </div>
+      <div class="stat-card reveal">
+        <div style="font-size:2rem;margin-bottom:0.5rem">4️⃣</div>
+        <h3>Enjoy</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem">Quality phones and expert repairs, delivered.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;text-align:center">
+  <div class="container">
+    <h2 style="color:white;margin-bottom:0.75rem">Need a Repair?</h2>
+    <p style="opacity:0.9;margin-bottom:1.5rem;max-width:480px;margin-left:auto;margin-right:auto">We pick up your phone, fix it, and deliver it back. Track the whole journey live.</p>
+    <a href="{{ url_for('repair.book') }}" class="btn btn-lg" style="background:white;color:var(--primary)">Book Repair Now</a>
+  </div>
+</section>
+
+<section class="section seo-brand-block" style="background:var(--bg-soft,#f8fafc)">
+  <div class="container" style="max-width:800px">
+    <h2 class="section-title">Why choose <span>Mobile Clinic</span>?</h2>
+    <p style="color:var(--text-muted);line-height:1.75;margin-bottom:1rem">
+      <strong>Mobile Clinic</strong> is a trusted mobile shop and repair service based in <strong>Urlabari, Morang, Nepal</strong>.
+      We help you <strong>buy second-hand smartphones</strong>, sell your old phone, <strong>exchange devices</strong>, and book
+      <strong>mobile repair with home pickup</strong>. From used iPhone and Samsung to screen and battery repair — Mobile Clinic focuses on fair price, verified listings, and clear tracking.
+    </p>
+    <ul style="color:var(--text-muted);line-height:1.8;padding-left:1.2rem">
+      <li>Second-hand mobile shop in Urlabari with photos and condition details</li>
+      <li>Phone repair pickup &amp; delivery — track status online</li>
+      <li>Buy, sell and exchange under one Mobile Clinic platform</li>
+      <li>COD and QR payment options where available</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section home-faq" id="faq">
+  <div class="container" style="max-width:720px">
+    <h2 class="section-title" style="text-align:center;margin-bottom:1.25rem">Frequently Asked <span>Questions</span></h2>
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">How do I book a repair with pickup?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Go to Book a Repair, describe the problem, set your pickup address on the map. Our team (admin) picks up, repairs, and can deliver back. Track status anytime.</p></details>
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">Do you serve Urlabari?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Yes — Mobile Clinic is focused on Urlabari, Morang and nearby areas for phones, exchange and repair coordination.</p></details>
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">How does phone exchange work?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Open Exchange listings, pick a phone, submit your device details and photos. The seller and admin are notified. You can also list your phone for exchange from the seller dashboard.</p></details>
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">COD and QR payment?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Many listings support COD and QR. QR may require a minimum amount; the seller/admin confirms the order after verifying payment.</p></details>
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">How do I track my order or repair?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Use Track in the menu with your name, mobile and email — no order number required. Repair tickets also have a tracking link from email.</p></details>
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">Can I sell my used phone?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Register, become a seller, upload your payment QR, then list the phone with photos. Platform commission applies on successful sales as per terms.</p></details>
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">Is there a warranty on second-hand phones?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Warranty depends on each listing (seller or shop warranty). Always read the product description before buying.</p></details>
+      <details style="background:#fff;padding:1rem 1.15rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">How do I contact you on Facebook or Instagram?</summary><p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.95rem">Use the Facebook / Instagram icons in the footer (set by admin) for direct message, or the green WhatsApp button on the right.</p></details>
+    </div>
+    <p style="text-align:center;margin-top:1.25rem"><a href="{{ url_for('main.faq') }}" class="btn btn-outline btn-sm">View all FAQs</a></p>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% set tt = settings.get('tiktok_embed_url') if settings else none %}
+{% if tt %}
+<div id="promo-video-overlay" class="promo-video-overlay" role="dialog" aria-modal="true" aria-label="Promo video">
+  <div class="promo-video-card">
+    <div class="promo-video-frame" id="promo-video-frame">
+      <div class="promo-video-loading" id="promo-video-loading">Loading video…</div>
+    </div>
+    <p class="promo-video-status" id="promo-video-status">Waiting for video to play…</p>
+    <button type="button" id="promo-skip-btn" class="btn btn-primary promo-skip-btn" disabled>Skip in 5s</button>
+  </div>
+</div>
+<style>
+.promo-video-overlay{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.78);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(5px)}
+.promo-video-overlay.is-hidden{display:none!important}
+.promo-video-card{background:#0f172a;border-radius:16px;padding:1rem;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.45);text-align:center}
+.promo-video-frame{position:relative;width:100%;aspect-ratio:9/16;max-height:min(70vh,560px);border-radius:12px;overflow:hidden;background:#000;margin-bottom:0.65rem}
+.promo-video-frame iframe,.promo-video-frame video{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:12px;object-fit:contain;background:#000}
+.promo-video-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:0.95rem;z-index:1}
+.promo-video-status{color:#94a3b8;font-size:0.82rem;margin:0 0 0.65rem}
+.promo-skip-btn{width:100%}
+.promo-skip-btn:disabled{opacity:.6;cursor:not-allowed}
+@media(min-width:640px){
+  .promo-video-card{max-width:480px}
+  .promo-video-frame{aspect-ratio:16/9;max-height:min(55vh,420px)}
+}
+</style>
+<script>
+(function(){
+  var raw = {{ tt|tojson }};
+  if(!raw) return;
+  var overlay = document.getElementById('promo-video-overlay');
+  var frame = document.getElementById('promo-video-frame');
+  var loading = document.getElementById('promo-video-loading');
+  var statusEl = document.getElementById('promo-video-status');
+  var btn = document.getElementById('promo-skip-btn');
+  if(!overlay || !frame || !btn) return;
+
+  function hideLoading(){
+    if(loading) loading.style.display = 'none';
+  }
+
+  function parseVideo(url){
+    url = (url || '').trim();
+    if(!url) return null;
+    // Direct media file
+    if(/\.(mp4|webm|ogg)(\?|$)/i.test(url) || url.indexOf('blob:') === 0){
+      return { type: 'video', src: url };
+    }
+    // YouTube
+    var yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/i);
+    if(yt){
+      return {
+        type: 'iframe',
+        src: 'https://www.youtube.com/embed/' + yt[1] + '?autoplay=1&mute=1&playsinline=1&rel=0&enablejsapi=1'
+      };
+    }
+    // Vimeo
+    var vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+    if(vm){
+      return {
+        type: 'iframe',
+        src: 'https://player.vimeo.com/video/' + vm[1] + '?autoplay=1&muted=1'
+      };
+    }
+    // TikTok
+    var tk = url.match(/tiktok\.com\/(?:@[^/]+\/video\/|embed\/v2\/|player\/v1\/)?(\d{8,})/i)
+          || url.match(/video\/(\d{8,})/);
+    if(tk && /tiktok/i.test(url)){
+      return { type: 'iframe', src: 'https://www.tiktok.com/embed/v2/' + tk[1] + '?autoplay=1' };
+    }
+    if(url.indexOf('tiktok.com/embed') !== -1){
+      return { type: 'iframe', src: url };
+    }
+    // Facebook
+    if(/facebook\.com|fb\.watch/i.test(url)){
+      return {
+        type: 'iframe',
+        src: 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url) + '&autoplay=true&mute=0&show_text=false'
+      };
+    }
+    // Generic: try iframe embed
+    if(/^https?:\/\//i.test(url)){
+      return { type: 'iframe', src: url };
+    }
+    return null;
+  }
+
+  var info = parseVideo(raw);
+  if(!info){
+    statusEl.textContent = 'Invalid video URL';
+    btn.disabled = false;
+    btn.textContent = 'Close';
+    return;
+  }
+
+  var timerStarted = false;
+  var left = 5;
+  var timer = null;
+
+  function startSkipTimer(){
+    if(timerStarted) return;
+    timerStarted = true;
+    hideLoading();
+    statusEl.textContent = 'Video playing — you can skip soon';
+    btn.textContent = 'Skip in ' + left + 's';
+    timer = setInterval(function(){
+      left -= 1;
+      if(left <= 0){
+        clearInterval(timer);
+        btn.disabled = false;
+        btn.textContent = 'Skip';
+        statusEl.textContent = 'You can skip now';
+      } else {
+        btn.textContent = 'Skip in ' + left + 's';
+      }
+    }, 1000);
+  }
+
+  // Fallback: if platform blocks play events, still unlock after load + 2s then start 5s
+  var fallbackLoad = setTimeout(function(){
+    if(!timerStarted){
+      statusEl.textContent = 'Video loaded';
+      startSkipTimer();
+    }
+  }, 12000);
+
+  if(info.type === 'video'){
+    var vid = document.createElement('video');
+    vid.src = info.src;
+    vid.controls = true;
+    vid.autoplay = true;
+    vid.playsInline = true;
+    vid.muted = true; // autoplay policies
+    vid.setAttribute('playsinline', '');
+    frame.appendChild(vid);
+    vid.addEventListener('loadeddata', function(){
+      hideLoading();
+      statusEl.textContent = 'Starting…';
+      var p = vid.play();
+      if(p && p.then) p.then(function(){ startSkipTimer(); }).catch(function(){
+        statusEl.textContent = 'Tap video to play';
+        vid.muted = false;
+        // start timer when user plays
+        vid.addEventListener('playing', function once(){ startSkipTimer(); vid.removeEventListener('playing', once); });
+        // still allow skip path after short wait if blocked
+        setTimeout(function(){ if(!timerStarted) startSkipTimer(); }, 3000);
+      });
+    });
+    vid.addEventListener('playing', function(){ startSkipTimer(); });
+    vid.addEventListener('error', function(){
+      statusEl.textContent = 'Could not load video file';
+      btn.disabled = false;
+      btn.textContent = 'Close';
+      hideLoading();
+    });
+  } else {
+    var ifr = document.createElement('iframe');
+    ifr.src = info.src;
+    ifr.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    ifr.allowFullscreen = true;
+    ifr.setAttribute('allowfullscreen', '');
+    ifr.title = 'Promo video';
+    frame.appendChild(ifr);
+    ifr.addEventListener('load', function(){
+      hideLoading();
+      statusEl.textContent = 'Video ready';
+      // Embed APIs rarely fire "play" cross-origin — start 5s after iframe loads
+      setTimeout(function(){ startSkipTimer(); }, 800);
+    });
+  }
+
+  btn.addEventListener('click', function(){
+    if(btn.disabled) return;
+    clearTimeout(fallbackLoad);
+    if(timer) clearInterval(timer);
+    overlay.classList.add('is-hidden');
+    frame.innerHTML = '';
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

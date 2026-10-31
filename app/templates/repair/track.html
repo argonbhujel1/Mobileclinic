@@ -1,0 +1,98 @@
+{% extends "layouts/base.html" %}
+{% block title %}Track {{ ticket.ticket_id }} | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:800px">
+<h1>Repair Ticket {{ ticket.ticket_id }}</h1>
+<p style="margin:1rem 0">Status: <strong id="ticket-status">{{ ticket.status|replace('_',' ')|title }}</strong></p>
+<p>{{ ticket.phone_brand }} {{ ticket.phone_model }} — {{ ticket.problem_description }}</p>
+{% if ticket.pickup_address %}
+<p style="color:var(--text-muted);font-size:0.9rem">Pickup: {{ ticket.pickup_address }}</p>
+{% endif %}
+<p id="route-info" style="font-size:0.9rem;color:var(--text-muted)"></p>
+
+<div id="track-map" class="map-container" style="margin:1.5rem 0;height:380px;border-radius:12px;border:1px solid var(--border);{% if not (trip and trip.last_lat) and not ticket.pickup_latitude %}display:none{% endif %}" data-tile-url="{{ map_tile_url }}"></div>
+<p id="track-map-hint" style="font-size:0.85rem;color:var(--text-muted);margin-top:-0.75rem">
+  🛵 Admin · 📍 Your pickup point. Live route updates while admin is on the way.
+</p>
+
+<h3 style="margin:1.5rem 0 0.75rem">Status History</h3>
+<ul style="list-style:none" id="status-history">
+{% for h in history %}
+<li style="background:white;padding:0.6rem 1rem;border-radius:8px;margin-bottom:0.4rem;box-shadow:var(--shadow);font-size:0.9rem">
+  <strong>{{ h.status|replace('_',' ')|title }}</strong> — {{ h.created_at }}{% if h.notes %} · {{ h.notes }}{% endif %}
+</li>
+{% else %}
+<li style="color:var(--text-muted)">No history yet.</li>
+{% endfor %}
+</ul>
+</div></section>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (!window.MCMaps) return;
+  const mapEl = document.getElementById('track-map');
+  const ticketId = {{ ticket.ticket_id|tojson }};
+  const token = new URLSearchParams(location.search).get('token') || '';
+  let map = null, staffMarker = null, destMarker = null, routeLayer = null;
+
+  function ensureMap() {
+    if (map) return map;
+    mapEl.style.display = 'block';
+    map = MCMaps.createMap('track-map');
+    return map;
+  }
+
+  async function updateMap(data) {
+    const destLat = data.pickup_lat || (data.trip && data.trip.destination_lat);
+    const destLng = data.pickup_lng || (data.trip && data.trip.destination_lng);
+    const sLat = data.trip && data.trip.last_lat;
+    const sLng = data.trip && data.trip.last_lng;
+    if (!destLat && !sLat) return;
+    const m = ensureMap();
+    const bounds = [];
+    if (destLat && destLng) {
+      if (!destMarker) destMarker = L.marker([destLat, destLng], { icon: MCMaps.userIcon() }).addTo(m).bindPopup('📍 Your location');
+      else destMarker.setLatLng([destLat, destLng]);
+      bounds.push([destLat, destLng]);
+    }
+    if (sLat && sLng) {
+      if (!staffMarker) staffMarker = L.marker([sLat, sLng], { icon: MCMaps.bikeIcon() }).addTo(m).bindPopup('🛵 Admin');
+      else staffMarker.setLatLng([sLat, sLng]);
+      bounds.push([sLat, sLng]);
+      if (destLat && destLng) {
+        routeLayer = await MCMaps.drawRoute(m, sLat, sLng, destLat, destLng, routeLayer);
+        const info = document.getElementById('route-info');
+        if (routeLayer && routeLayer._routeMeta && info) {
+          info.textContent = 'Admin is ~' + (routeLayer._routeMeta.distance_m/1000).toFixed(1) + ' km away · ~' + Math.round(routeLayer._routeMeta.duration_s/60) + ' min';
+        }
+      }
+      const hint = document.getElementById('track-map-hint');
+      if (hint) hint.textContent = 'Live: admin updated ' + (data.trip.last_update || 'just now');
+    }
+    if (bounds.length) m.fitBounds(bounds, { padding: [40, 40] });
+    if (data.status) {
+      const el = document.getElementById('ticket-status');
+      if (el) el.textContent = String(data.status).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+  }
+
+  updateMap({
+    pickup_lat: {{ ticket.pickup_latitude if ticket.pickup_latitude is not none else 'null' }},
+    pickup_lng: {{ ticket.pickup_longitude if ticket.pickup_longitude is not none else 'null' }},
+    trip: {% if trip %}{
+      last_lat: {{ trip.last_lat if trip.last_lat is not none else 'null' }},
+      last_lng: {{ trip.last_lng if trip.last_lng is not none else 'null' }},
+      last_update: {{ (trip.last_update or '')|tojson }},
+      destination_lat: {{ trip.destination_lat if trip.destination_lat is not none else 'null' }},
+      destination_lng: {{ trip.destination_lng if trip.destination_lng is not none else 'null' }}
+    }{% else %}null{% endif %}
+  });
+
+  setInterval(function() {
+    const url = '/repair/api/track/' + encodeURIComponent(ticketId) + (token ? ('?token=' + encodeURIComponent(token)) : '');
+    fetch(url).then(r => r.ok ? r.json() : null).then(d => { if (d) updateMap(d); }).catch(() => {});
+  }, 8000);
+});
+</script>
+{% endblock %}

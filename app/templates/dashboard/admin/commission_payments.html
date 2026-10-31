@@ -1,0 +1,51 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Commission Payments | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Commission Payments</h1>
+  <span style="color:var(--text-muted);font-size:0.9rem">{{ payments|length }} shown</span>
+</div>
+{% if payments %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Seller</th>
+        <th>Email</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pay in payments %}
+      <tr>
+        <td><strong>{{ pay.seller_name or '—' }}</strong></td>
+        <td>{{ pay.seller_email or '—' }}</td>
+        <td>NPR {{ "{:,.0f}".format(pay.amount or 0) }}</td>
+        <td>
+          {% set st = (pay.status or '')|lower %}
+          <span class="badge {% if st in ['verified','approved','paid'] %}badge-success{% elif st in ['pending_verification','pending'] %}badge-warning{% elif st in ['rejected'] %}badge-danger{% else %}badge-info{% endif %}">{{ pay.status or '—' }}</span>
+        </td>
+        <td>{{ pay.created_at or '—' }}</td>
+        <td>
+          {% if pay.status == 'pending_verification' %}
+          <form method="post" action="{{ url_for('admin.verify_payment', payment_id=pay.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button name="action" value="approve" class="btn btn-primary btn-sm">Verify</button>
+            <button name="action" value="reject" class="btn btn-outline btn-sm">Reject</button>
+          </form>
+          {% else %}
+          —
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">No commission payments yet.</div>
+{% endif %}
+{% endblock %}

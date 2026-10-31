@@ -1,0 +1,127 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}{% if product %}Edit Phone{% else %}Add Phone{% endif %} | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{% if product %}Edit Phone{% else %}Add Phone Listing{% endif %}</h1>
+  <a href="{{ url_for('admin.phones') }}" class="btn btn-ghost btn-sm">← Back</a>
+</div>
+
+{% if product and images %}
+<div style="max-width:720px;margin-top:1rem;background:#fff;padding:1.25rem;border-radius:12px;border:1px solid var(--border);margin-bottom:1rem">
+  <label style="font-weight:600;display:block;margin-bottom:0.75rem">Current photos</label>
+  <div style="display:flex;flex-wrap:wrap;gap:0.75rem">
+    {% for img in images %}
+    <div style="width:96px">
+      <img src="{{ img.cloudinary_url }}" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:block">
+      {% if img.is_primary %}<span style="font-size:0.7rem;color:var(--primary)">Main</span>{% endif %}
+      <form method="post" action="{{ url_for('admin.phone_image_delete', product_id=product.id, image_id=img.id) }}" style="margin-top:0.35rem" onsubmit="return confirm('Remove this photo?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-ghost btn-sm" style="width:100%;color:#b91c1c;font-size:0.75rem;padding:0.25rem">Remove</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<form method="post" action="{% if product %}{{ url_for('admin.phone_edit', product_id=product.id) }}{% else %}{{ url_for('admin.phone_add') }}{% endif %}" enctype="multipart/form-data" id="phone-form" style="max-width:720px;background:#fff;padding:1.75rem;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow)">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group">
+    <label>Title *</label>
+    <input type="text" name="title" class="form-control" required placeholder="e.g. iPhone 13 Pro 128GB" value="{{ product.title if product else '' }}">
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group"><label>Brand *</label><input type="text" name="brand" class="form-control" required value="{{ product.brand if product else '' }}"></div>
+    <div class="form-group"><label>Model *</label><input type="text" name="model" class="form-control" required value="{{ product.model if product else '' }}"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+    <div class="form-group"><label>Variant</label><input type="text" name="variant" class="form-control" value="{{ product.variant if product else '' }}"></div>
+    <div class="form-group"><label>RAM</label><input type="text" name="ram" class="form-control" value="{{ product.ram if product else '' }}"></div>
+    <div class="form-group"><label>Storage</label><input type="text" name="storage" class="form-control" value="{{ product.storage if product else '' }}"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group">
+      <label>Condition *</label>
+      <select name="condition" class="form-control" required>
+        {% for c in conditions %}
+        <option value="{{ c }}" {% if product and product.condition == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Selling Price (NPR) *</label>
+      <input type="number" name="selling_price" class="form-control" required min="1" step="1" value="{{ product.selling_price if product else '' }}">
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Minimum QR Payment (NPR)</label>
+    <input type="number" name="min_qr_amount" class="form-control" min="1" step="1" value="{{ product.min_qr_amount if product and product.min_qr_amount else (product.selling_price if product else '') }}">
+    <small style="color:var(--text-muted)">QR order confirm हुन यो रकम वा बढी pay गर्नुपर्छ।</small>
+  </div>
+  <div class="form-group">
+    <label><input type="checkbox" name="is_negotiable" {% if product and product.is_negotiable %}checked{% endif %}> Price negotiable</label>
+    &nbsp;&nbsp;
+    <label><input type="checkbox" name="is_featured" {% if not product or product.is_featured %}checked{% endif %}> Featured</label>
+    {% if product %}
+    &nbsp;&nbsp;
+    <label><input type="checkbox" name="is_active" value="1" {% if product.is_active %}checked{% endif %}> Active</label>
+    {% endif %}
+  </div>
+  <div class="form-group">
+    <label>Description *</label>
+    <textarea name="description" class="form-control" rows="4" required>{{ product.description if product else '' }}</textarea>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group"><label>IMEI / Serial (private)</label><input type="text" name="imei_serial" class="form-control" value="{{ product.imei_serial if product else '' }}"></div>
+    <div class="form-group">
+      <label>Category</label>
+      <select name="category_id" class="form-control">
+        <option value="">—</option>
+        {% for cat in categories %}
+        <option value="{{ cat.id }}" {% if product and product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group">
+      <label>Warranty</label>
+      <select name="warranty_status" class="form-control">
+        {% for w in ['No Warranty','Brand Warranty','Seller Warranty'] %}
+        <option {% if product and product.warranty_status == w %}selected{% endif %}>{{ w }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group"><label>Warranty Details</label><input type="text" name="warranty_details" class="form-control" value="{{ product.warranty_details if product else '' }}"></div>
+  </div>
+  <div class="form-group"><label>Accessories</label><input type="text" name="accessories" class="form-control" value="{{ product.accessories if product else 'No Accessories' }}"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+    <div class="form-group"><label>Location *</label><input type="text" name="location" class="form-control" required value="{{ product.location if product else 'Urlabari' }}"></div>
+    <div class="form-group"><label>Stock</label><input type="number" name="stock_quantity" class="form-control" value="{{ product.stock_quantity if product else 1 }}" min="0"></div>
+    <div class="form-group">
+      <label>Payment</label>
+      <select name="payment_method" class="form-control">
+        {% for pm, label in [('both','Both'),('cod','COD'),('qr','QR')] %}
+        <option value="{{ pm }}" {% if product and product.payment_method == pm %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="form-group" style="background:#f0f9ff;padding:1rem;border-radius:10px;border:1px solid #bae6fd">
+    <label><input type="checkbox" name="allows_exchange" value="1" {% if product and product.allows_exchange %}checked{% endif %}> Open for <strong>Exchange</strong></label>
+    <div style="margin-top:0.5rem">
+      <label>Exchange requirements (what you want in return)</label>
+      <textarea name="exchange_requirements" class="form-control" rows="3" placeholder="e.g. Looking for iPhone 12 or similar, buyer can add NPR 5,000">{{ product.exchange_requirements if product else '' }}</textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>{% if product %}Add more photos{% else %}Photos{% endif %}</label>
+    <input type="file" name="photos" class="form-control" accept="image/*" multiple>
+  </div>
+  <div class="form-group">
+    <label>Or image URL</label>
+    <input type="url" name="imgbb_url" class="form-control" placeholder="https://...">
+  </div>
+  <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:0.5rem">{% if product %}Save Changes{% else %}List Phone{% endif %}</button>
+</form>
+{% endblock %}

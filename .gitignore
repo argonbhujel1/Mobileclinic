@@ -1,0 +1,91 @@
+# Environment
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+.venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing / Coverage
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+*.log
+logs/
+
+# Local uploads / temp
+uploads/
+tmp/
+temp/
+instance/
+
+# Node
+node_modules/
+package-lock.json
+
+# Vercel
+.vercel
+
+# Secrets
+secrets/
+credentials.json
+service-account*.json
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated
+*.zip
+artifacts/
+
+# Local dev
+mobile_clinic.db
+app/static/uploads/
+*.db

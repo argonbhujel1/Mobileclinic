@@ -1,0 +1,41 @@
+{% extends "layouts/base.html" %}
+{% block title %}Cart | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:720px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem">
+  <h1 style="margin:0">Your Cart</h1>
+  {% if items %}
+  <form method="post" action="{{ url_for('marketplace.cart_clear') }}" onsubmit="return confirm('Clear entire cart?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--danger)">Clear cart</button>
+  </form>
+  {% endif %}
+</div>
+
+{% if items %}
+<div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem">
+{% for p in items %}
+  <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <div>
+      <strong>{{ p.title }}</strong>
+      <div style="font-size:0.9rem;color:var(--text-muted)">NPR {{ "{:,.0f}".format(p.selling_price) }} × {{ p.qty }}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+      <span style="font-weight:700">NPR {{ "{:,.0f}".format(p.subtotal) }}</span>
+      <form method="post" action="{{ url_for('marketplace.cart_remove', product_id=p.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-outline btn-sm">Remove</button>
+      </form>
+    </div>
+  </div>
+{% endfor %}
+</div>
+<p style="font-size:1.15rem;margin-bottom:1rem">Total: <strong>NPR {{ "{:,.0f}".format(total) }}</strong></p>
+<a href="{{ url_for('marketplace.checkout') }}" class="btn btn-primary btn-lg">Checkout</a>
+<a href="{{ url_for('marketplace.browse') }}" class="btn btn-ghost">Continue shopping</a>
+{% else %}
+<p style="color:var(--text-muted)">Your cart is empty.</p>
+<a href="{{ url_for('marketplace.browse') }}" class="btn btn-primary" style="margin-top:1rem">Browse phones</a>
+{% endif %}
+</div></section>
+{% endblock %}

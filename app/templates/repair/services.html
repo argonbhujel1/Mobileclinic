@@ -1,0 +1,20 @@
+{% extends "layouts/base.html" %}
+{% block title %}Repair Services | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="text-align:center;max-width:700px">
+<h1>Mobile Repair Services</h1>
+<p style="margin:1rem 0 2rem;color:var(--text-muted)">Screen, battery, charging port, water damage and more. We pick up your phone in Urlabari and nearby, repair it, and deliver it back. Track the trip live on the map.</p>
+<a href="{{ url_for('repair.book') }}" class="btn btn-primary btn-lg">Book a Repair</a>
+</div></section>
+
+<section class="section" style="padding-top:0"><div class="container" style="max-width:720px">
+<h2 style="margin-bottom:1rem;text-align:center">Repair FAQs</h2>
+<div style="display:flex;flex-direction:column;gap:0.75rem">
+<details style="background:#fff;padding:1rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">What repairs do you offer?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Display/screen, battery, charging port, speaker, camera, software issues, water damage assessment and more — confirmed after diagnosis.</p></details>
+<details style="background:#fff;padding:1rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">Do you pick up from my home?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Yes. Enter your address and map pin when booking. Admin handles pickup and can share live location while on the way.</p></details>
+<details style="background:#fff;padding:1rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">How long does a repair take?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Depends on the issue and parts. You get status updates on your ticket; many common jobs finish within a few days.</p></details>
+<details style="background:#fff;padding:1rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">Will my data be safe?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">Please back up and remove accounts where possible. We handle devices carefully but are not responsible for data loss incidental to repair.</p></details>
+<details style="background:#fff;padding:1rem;border-radius:10px;border:1px solid var(--border)"><summary style="font-weight:600;cursor:pointer">How is the price decided?</summary><p style="margin-top:0.5rem;color:var(--text-muted)">After diagnosis we confirm parts and labour. Extra work needs your approval before continuing.</p></details>
+</div>
+</div></section>
+{% endblock %}

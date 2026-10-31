@@ -1,0 +1,110 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Repairs | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Repair Tickets</h1>
+    <p style="color:var(--text-muted);font-size:0.9rem;margin:0.35rem 0 0">
+      Pickup, repair, and delivery are all handled by admin. Update status as you progress.
+    </p>
+  </div>
+</div>
+
+{% if tickets %}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Ticket</th>
+        <th>Phone / Issue</th>
+        <th>Customer</th>
+        <th>Pickup address</th>
+        <th>Status</th>
+        <th>Admin actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tickets %}
+      <tr>
+        <td>
+          <strong>{{ t.ticket_id or t.id }}</strong>
+          <br><small style="color:var(--text-muted)">{{ t.created_at or '' }}</small>
+        </td>
+        <td>
+          <strong>{{ t.phone_brand or '' }} {{ t.phone_model or '—' }}</strong>
+          <div style="max-width:200px;font-size:0.85rem;color:var(--text-muted);margin-top:0.25rem" title="{{ t.problem_description or '' }}">
+            {{ (t.problem_description or '—')[:100] }}{% if t.problem_description and t.problem_description|length > 100 %}…{% endif %}
+          </div>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            {% if t.user_photo %}
+            <img src="{{ t.user_photo }}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
+            {% else %}
+            <div style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;font-size:0.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">👤</div>
+            {% endif %}
+            <div>
+              {{ t.user_full_name or t.guest_name or '—' }}
+              {% if t.guest_mobile or t.user_mobile %}<br><small>{{ t.guest_mobile or t.user_mobile }}</small>{% endif %}
+              {% if t.guest_email or t.user_email %}<br><small style="color:var(--text-muted)">{{ t.guest_email or t.user_email }}</small>{% endif %}
+            </div>
+          </div>
+        </td>
+        <td style="max-width:220px;font-size:0.88rem">
+          {{ t.pickup_address or '—' }}
+          {% if t.pickup_instructions %}<br><small style="color:var(--text-muted)">{{ t.pickup_instructions }}</small>{% endif %}
+          {% if t.pickup_latitude and t.pickup_longitude %}
+          <br><a href="https://www.google.com/maps?q={{ t.pickup_latitude }},{{ t.pickup_longitude }}" target="_blank" rel="noopener" style="font-size:0.8rem">Open map ↗</a>
+          {% endif %}
+        </td>
+        <td>
+          {% set st = (t.status or '')|lower %}
+          <span class="badge {% if st in ['completed','delivered','repair_completed'] %}badge-success{% elif st in ['submitted','pending','diagnosis','awaiting_approval'] %}badge-warning{% elif st in ['cancelled','declined'] %}badge-danger{% else %}badge-info{% endif %}">
+            {{ status_labels.get(t.status, t.status) if status_labels is defined else t.status }}
+          </span>
+        </td>
+        <td>
+          <form method="post" action="{{ url_for('admin.repair_status', ticket_pk=t.id) }}" style="display:flex;flex-direction:column;gap:0.35rem;min-width:200px">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select name="status" class="form-control" style="padding:0.3rem 0.5rem;font-size:0.82rem">
+              {% for s in statuses %}
+              <option value="{{ s }}" {% if t.status == s %}selected{% endif %}>
+                {{ status_labels.get(s, s) if status_labels is defined else s }}
+              </option>
+              {% endfor %}
+            </select>
+            <input type="text" name="notes" class="form-control" placeholder="Note (optional)" style="padding:0.3rem 0.5rem;font-size:0.82rem">
+            <button type="submit" class="btn btn-primary btn-sm">Update status</button>
+          </form>
+          {% if t.status == 'submitted' %}
+          <form method="post" action="{{ url_for('admin.repair_status', ticket_pk=t.id) }}" style="margin-top:0.35rem">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="status" value="accepted">
+            <input type="hidden" name="notes" value="Accepted — admin will arrange pickup">
+            <button type="submit" class="btn btn-outline btn-sm" style="width:100%">Accept + plan pickup</button>
+          </form>
+          {% elif t.status == 'accepted' %}
+          <form method="post" action="{{ url_for('admin.repair_status', ticket_pk=t.id) }}" style="margin-top:0.35rem">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="status" value="pickup_started">
+            <input type="hidden" name="notes" value="Admin started pickup">
+            <button type="submit" class="btn btn-outline btn-sm" style="width:100%">Start pickup</button>
+          </form>
+          {% elif t.status == 'pickup_started' %}
+          <form method="post" action="{{ url_for('admin.repair_status', ticket_pk=t.id) }}" style="margin-top:0.35rem">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="status" value="phone_collected">
+            <input type="hidden" name="notes" value="Phone collected by admin">
+            <button type="submit" class="btn btn-outline btn-sm" style="width:100%">Mark collected</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">No repair tickets yet. Customers book from /repair/book.</div>
+{% endif %}
+{% endblock %}
