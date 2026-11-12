@@ -1,0 +1,9 @@
+{% extends "layouts/base.html" %}
+{% block title %}Track {{ order.order_id }} | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:700px">
+<h1>Order {{ order.order_id }}</h1>
+<p style="margin:1rem 0">Status: <strong>{{ order.status|title }}</strong> · Payment: {{ order.payment_status }}</p>
+<p>Total: NPR {{ "{:,.0f}".format(order.total_amount) }} · Method: {{ order.payment_method|upper }}</p>
+<ul style="margin-top:1.5rem;list-style:none">{% for i in items %}<li style="background:white;padding:0.75rem 1rem;border-radius:8px;margin-bottom:0.5rem;box-shadow:var(--shadow)">{{ i.product_title }} × {{ i.quantity }} — NPR {{ "{:,.0f}".format(i.product_price * i.quantity) }}</li>{% endfor %}</ul>
+</div></section>{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}Orders | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Orders</h1>
+  <span style="color:var(--text-muted);font-size:0.9rem">{{ orders|length }} shown</span>
+</div>
+{% if orders %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Buyer</th>
+        <th>Total</th>
+        <th>Payment</th>
+        <th>Status</th>
+        <th>Update</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td><strong>{{ o.order_id or o.id }}</strong></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            {% if o.buyer_photo %}
+            <img src="{{ o.buyer_photo }}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover">
+            {% else %}
+            <div style="width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0">👤</div>
+            {% endif %}
+            <div>
+              {{ o.buyer_name or o.guest_name or '—' }}
+              {% if o.buyer_email or o.guest_email %}<br><small style="color:var(--text-muted)">{{ o.buyer_email or o.guest_email }}</small>{% endif %}
+              {% if o.buyer_mobile or o.guest_mobile %}<br><small style="color:var(--text-muted)">{{ o.buyer_mobile or o.guest_mobile }}</small>{% endif %}
+            </div>
+          </div>
+        </td>
+        <td>NPR {{ "{:,.0f}".format(o.total_amount or 0) }}</td>
+        <td>
+          <span class="badge badge-info">{{ o.payment_status or '—' }}</span>
+          <br><small>{{ o.payment_method or '' }}</small>
+          {% if o.payment_method == 'qr' %}
+          <br><small style="color:var(--text-muted)">Paid claim: NPR {{ "{:,.0f}".format(o.payment_amount_claimed or 0) }}</small>
+          {% if o.payment_reference %}<br><small>Ref: {{ o.payment_reference }}</small>{% endif %}
+          {% if o.payment_proof_url %}<br><a href="{{ o.payment_proof_url }}" target="_blank" rel="noopener">Receipt</a>{% endif %}
+          {% endif %}
+        </td>
+        <td>
+          {% set st = (o.status or '')|lower %}
+          <span class="badge {% if st in ['completed','delivered','paid'] %}badge-success{% elif st in ['pending','processing','confirmed'] %}badge-warning{% elif st in ['cancelled','failed','refunded'] %}badge-danger{% else %}badge-info{% endif %}">{{ o.status or '—' }}</span>
+        </td>
+        <td>
+          <form method="post" action="{{ url_for('admin.order_status', order_id=o.id) }}" style="display:flex;gap:0.35rem;align-items:center;flex-wrap:wrap">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select name="status" class="form-control" style="width:auto;min-width:120px;padding:0.3rem 0.5rem;font-size:0.82rem">
+              {% for s in statuses %}
+              <option value="{{ s }}" {% if o.status == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+            <select name="payment_status" class="form-control" style="width:auto;min-width:110px;padding:0.3rem 0.5rem;font-size:0.82rem">
+              {% for ps in ['pending','awaiting_verification','paid','failed','refunded','cod'] %}
+              <option value="{{ ps }}" {% if o.payment_status == ps %}selected{% endif %}>{{ ps }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          </form>
+        </td>
+        <td>{{ o.created_at or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">No orders yet.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "layouts/base.html" %}
+{% block title %}Wishlist | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:900px">
+  <h1 style="margin-bottom:0.5rem">My Wishlist</h1>
+  <p style="color:var(--text-muted);margin-bottom:1.25rem">Saved phones &amp; accessories. Price-drop alerts notify you in dashboard notifications.</p>
+  {% if items %}
+  <div style="display:flex;flex-direction:column;gap:0.85rem">
+    {% for p in items %}
+    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+      <a href="{{ url_for('marketplace.detail', product_uuid=p.uuid) }}" style="flex-shrink:0">
+        {% if p.primary_image %}
+        <img src="{{ p.primary_image }}" alt="" style="width:88px;height:88px;object-fit:cover;border-radius:10px">
+        {% else %}
+        <div style="width:88px;height:88px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center">📱</div>
+        {% endif %}
+      </a>
+      <div style="flex:1;min-width:180px">
+        <a href="{{ url_for('marketplace.detail', product_uuid=p.uuid) }}" style="font-weight:600;text-decoration:none;color:inherit">{{ p.title }}</a>
+        <div style="margin-top:0.25rem">
+          <strong style="color:var(--primary)">NPR {{ "{:,.0f}".format(p.selling_price or 0) }}</strong>
+          {% if p.price_at_add and p.selling_price is not none and p.selling_price < p.price_at_add %}
+          <span class="badge badge-success" style="margin-left:0.35rem">Price dropped</span>
+          <small style="color:var(--text-muted)"> was NPR {{ "{:,.0f}".format(p.price_at_add) }}</small>
+          {% endif %}
+        </div>
+        {% if p.alert_active %}
+        <small style="color:var(--text-muted)">Alert target: NPR {{ "{:,.0f}".format(p.target_price or 0) }}</small>
+        {% endif %}
+      </div>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+        <form method="post" action="{{ url_for('marketplace.cart_add', product_id=p.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-primary btn-sm" type="submit">Add to cart</button>
+        </form>
+        <form method="post" action="{{ url_for('marketplace.wishlist_remove', product_id=p.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-ghost btn-sm" type="submit">Remove</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p style="color:var(--text-muted)">Wishlist empty. Open a product and tap “Wishlist”.</p>
+  <a href="{{ url_for('marketplace.browse') }}" class="btn btn-primary" style="margin-top:1rem">Browse phones</a>
+  {% endif %}
+</div></section>
+{% endblock %}

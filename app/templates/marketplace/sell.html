@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+{% block title %}Sell Your Phone | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:600px;text-align:center">
+<h1>Sell Your Phone</h1>
+<p style="margin:1rem 0 2rem;color:var(--text-muted)">List your smartphone on Mobile Clinic. Sellers get credentials after applying from the Customer Dashboard.</p>
+{% if current_user.is_authenticated and current_user.role in ['seller','admin'] %}
+<a href="{{ url_for('dashboard.seller_add_phone') }}" class="btn btn-primary btn-lg">Add Phone Listing</a>
+{% else %}
+<a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Register to Sell</a>
+{% endif %}
+</div></section>{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "layouts/base.html" %}
+{% block title %}Add Exchange Phone | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:560px">
+<h1>List phone for exchange</h1>
+<p style="color:var(--text-muted);margin:0.5rem 0 1.25rem">Name, model, photos and what you want in return. Buyers send interest with their phone details.</p>
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group"><label>Phone name / title *</label><input type="text" name="title" class="form-control" required></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group"><label>Brand *</label><input type="text" name="brand" class="form-control" required></div>
+    <div class="form-group"><label>Model *</label><input type="text" name="model" class="form-control" required></div>
+  </div>
+  <div class="form-group"><label>Condition</label><input type="text" name="condition" class="form-control" value="Good"></div>
+  <div class="form-group"><label>Short description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+  <div class="form-group"><label>What you want in exchange *</label><textarea name="exchange_requirements" class="form-control" rows="3" required></textarea></div>
+  <div class="form-group"><label>Location</label><input type="text" name="location" class="form-control" value="Urlabari"></div>
+  <div class="form-group"><label>Photos</label><input type="file" name="photos" class="form-control" accept="image/*" multiple></div>
+  <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Publish</button>
+</form>
+</div></section>
+{% endblock %}

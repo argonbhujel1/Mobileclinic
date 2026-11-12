@@ -1,0 +1,75 @@
+{% extends "layouts/base.html" %}
+{% block title %}Track Order / Repair | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:720px">
+    <h1 style="margin-bottom:0.5rem">Track Order or Repair</h1>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem">Enter the name, mobile and email used when ordering or booking. Order number not required.</p>
+
+    <form method="post" style="background:#fff;padding:1.5rem;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:2rem">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" class="form-control" value="{{ form.name }}" placeholder="As used on order / repair">
+      </div>
+      <div class="form-group">
+        <label>Mobile Number *</label>
+        <input type="tel" name="mobile" class="form-control" value="{{ form.mobile }}" placeholder="98XXXXXXXX">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" class="form-control" value="{{ form.email }}" placeholder="you@example.com">
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">At least mobile <strong>or</strong> email is required.</p>
+      <button type="submit" class="btn btn-primary" style="width:100%">Find my orders & repairs</button>
+    </form>
+
+    {% if searched %}
+      <h2 style="font-size:1.15rem;margin-bottom:0.75rem">Orders ({{ results.orders|length }})</h2>
+      {% if results.orders %}
+        {% for o in results.orders %}
+        <div style="background:#fff;padding:1rem 1.25rem;border-radius:10px;margin-bottom:0.6rem;border:1px solid var(--border);box-shadow:var(--shadow)">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;align-items:center">
+            <div>
+              <strong>{{ o.order_id }}</strong>
+              <span style="color:var(--text-muted);font-size:0.9rem"> · NPR {{ "{:,.0f}".format(o.total_amount or 0) }}</span>
+              <br>
+              <span class="badge badge-info" style="margin-top:0.35rem;display:inline-block">{{ o.status }}</span>
+              <span style="font-size:0.85rem;color:var(--text-muted)"> · Payment: {{ o.payment_status }}</span>
+            </div>
+            {% if o.tracking_token %}
+            <a class="btn btn-outline btn-sm" href="{{ url_for('marketplace.track', order_id=o.order_id, token=o.tracking_token) }}">View details</a>
+            {% endif %}
+          </div>
+          <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.4rem">{{ o.created_at }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--text-muted);margin-bottom:1.5rem">No orders found.</p>
+      {% endif %}
+
+      <h2 style="font-size:1.15rem;margin:1.5rem 0 0.75rem">Repairs ({{ results.repairs|length }})</h2>
+      {% if results.repairs %}
+        {% for r in results.repairs %}
+        <div style="background:#fff;padding:1rem 1.25rem;border-radius:10px;margin-bottom:0.6rem;border:1px solid var(--border);box-shadow:var(--shadow)">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;align-items:center">
+            <div>
+              <strong>{{ r.ticket_id }}</strong>
+              <span style="color:var(--text-muted);font-size:0.9rem"> · {{ r.phone_brand }} {{ r.phone_model }}</span>
+              <br>
+              <span class="badge badge-info" style="margin-top:0.35rem;display:inline-block">{{ r.status|replace('_',' ') }}</span>
+            </div>
+            {% if r.tracking_token %}
+            <a class="btn btn-outline btn-sm" href="{{ url_for('repair.track', ticket_id=r.ticket_id, token=r.tracking_token) }}">Track repair</a>
+            {% endif %}
+          </div>
+          <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.4rem">{{ r.created_at }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--text-muted)">No repairs found.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

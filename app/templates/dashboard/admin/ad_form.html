@@ -1,0 +1,62 @@
+{% extends "layouts/admin_base.html" %}
+{% block title %}{% if ad %}Edit Ad{% else %}Add Ad{% endif %} | {{ business_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{% if ad %}Edit ad{% else %}Add advertisement{% endif %}</h1>
+  <p style="color:var(--text-muted);font-size:0.9rem;margin:0.5rem 0 0;max-width:560px">
+    Public site मा देखिन: <strong>Active</strong> check गर्नुहोस्, placement <strong>Home — middle</strong> वा <strong>Below header</strong> रोज्नुहोस्, र banner image हाल्नुहोस्। Homepage refresh गर्नुहोस्।
+  </p>
+  <a href="{{ url_for('admin.ads_list') }}" class="btn btn-ghost btn-sm">← Back</a>
+</div>
+<form method="post" enctype="multipart/form-data" style="max-width:560px;background:#fff;padding:1.5rem;border-radius:12px;border:1px solid var(--border)">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group">
+    <label>Title *</label>
+    <input type="text" name="title" class="form-control" required value="{{ ad.title if ad else '' }}" placeholder="Sponsor / campaign name">
+  </div>
+  <div class="form-group">
+    <label>Placement *</label>
+    <select name="placement" class="form-control" required>
+      {% for key, label in placements %}
+      <option value="{{ key }}" {% if ad and ad.placement == key %}selected{% elif not ad and key == 'home_mid' %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Banner image</label>
+    {% if ad and ad.image_url %}
+    <div style="margin-bottom:0.5rem"><img src="{{ ad.image_url }}" alt="" style="max-width:100%;max-height:120px;border-radius:8px"></div>
+    {% endif %}
+    <input type="file" name="image" class="form-control" accept="image/*">
+  </div>
+  <div class="form-group">
+    <label>Or image URL</label>
+    <input type="url" name="image_url_manual" class="form-control" placeholder="https://..." value="">
+  </div>
+  <div class="form-group">
+    <label>Click link (destination URL)</label>
+    <input type="url" name="link_url" class="form-control" value="{{ ad.link_url if ad else '' }}" placeholder="https://...">
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group">
+      <label>Sort order</label>
+      <input type="number" name="sort_order" class="form-control" value="{{ ad.sort_order if ad else 0 }}">
+    </div>
+    <div class="form-group">
+      <label style="display:block;margin-bottom:0.5rem">&nbsp;</label>
+      <label><input type="checkbox" name="is_active" value="1" {% if not ad or ad.is_active %}checked{% endif %}> Active</label>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="form-group">
+      <label>Starts (optional)</label>
+      <input type="datetime-local" name="starts_at" class="form-control" value="{{ ad.starts_at if ad and ad.starts_at else '' }}">
+    </div>
+    <div class="form-group">
+      <label>Ends (optional)</label>
+      <input type="datetime-local" name="ends_at" class="form-control" value="{{ ad.ends_at if ad and ad.ends_at else '' }}">
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Save ad</button>
+</form>
+{% endblock %}

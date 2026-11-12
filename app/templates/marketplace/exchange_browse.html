@@ -1,0 +1,24 @@
+{% extends "layouts/base.html" %}
+{% block title %}Phones for Exchange | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+<h1 style="margin-bottom:0.5rem">Open for exchange</h1>
+<p style="color:var(--text-muted);margin-bottom:1.5rem">Listings where seller/admin accepts phone exchange. Submit your device details on the product page.</p>
+{% if products %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem">
+{% for p in products %}
+  <a href="{{ url_for('marketplace.detail', product_uuid=p.uuid) }}" style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;text-decoration:none;color:inherit">
+    {% if p.primary_image %}<img src="{{ p.primary_image }}" alt="" style="width:100%;height:160px;object-fit:cover">{% endif %}
+    <div style="padding:0.85rem">
+      <strong>{{ p.title }}</strong>
+      <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.25rem">NPR {{ "{:,.0f}".format(p.selling_price or 0) }}</div>
+      <span class="badge badge-info" style="margin-top:0.35rem">Exchange</span>
+    </div>
+  </a>
+{% endfor %}
+</div>
+{% else %}
+<p style="color:var(--text-muted)">No exchange listings yet.</p>
+{% endif %}
+</div></section>
+{% endblock %}

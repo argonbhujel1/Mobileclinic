@@ -1,0 +1,25 @@
+{% extends "layouts/base.html" %}
+{% block title %}Pay Admin | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:600px">
+<h1>Pay Admin Commission</h1>
+<p style="margin:1rem 0">Outstanding: <strong style="font-size:1.5rem;color:var(--primary)">NPR {{ "{:,.0f}".format(outstanding) }}</strong></p>
+{% if admin_qr %}
+<div class="qr-box">
+<img src="{{ admin_qr.cloudinary_url }}" alt="Admin QR Code">
+<p>Scan to pay Admin share</p>
+</div>
+<form method="post" enctype="multipart/form-data" style="margin-top:1.5rem"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="form-group"><label>Amount Paid (NPR) *</label><input type="number" name="amount" class="form-control" required min="1" step="0.01" value="{{ outstanding }}"></div>
+<div class="form-group"><label>Transaction / Reference ID</label><input type="text" name="transaction_ref" class="form-control"></div>
+<div class="form-group"><label>Receipt Screenshot (optional)</label><input type="file" name="receipt" accept="image/*" class="form-control"></div>
+<button type="submit" class="btn btn-primary" style="width:100%">Submit Payment Proof</button>
+</form>
+{% else %}
+<div class="alert alert-warning">Admin QR payment is currently unavailable. Please contact Mobile Clinic.</div>
+{% endif %}
+{% if commissions %}<h3 style="margin:2rem 0 0.75rem">Commission Breakdown</h3>
+{% for c in commissions %}<div style="background:white;padding:0.75rem 1rem;border-radius:8px;margin-bottom:0.4rem;font-size:0.9rem">Sale NPR {{ "{:,.0f}".format(c.sale_amount) }} → Commission NPR {{ "{:,.0f}".format(c.commission_amount) }} ({{ c.status }}){% if c.deadline_at %} · Due by {{ c.deadline_at }}{% endif %}</div>{% endfor %}{% endif %}
+{% if history %}<h3 style="margin:2rem 0 0.75rem">Payment History</h3>
+{% for h in history %}<div style="background:white;padding:0.75rem 1rem;border-radius:8px;margin-bottom:0.4rem;font-size:0.9rem">NPR {{ "{:,.0f}".format(h.amount) }} — {{ h.status }} · {{ h.created_at }}</div>{% endfor %}{% endif %}
+</div></section>{% endblock %}

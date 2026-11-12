@@ -1,0 +1,31 @@
+{# usage: {% set placement = "home_mid" %}{% include "components/ad_slot.html" %} #}
+{% set _place = placement if placement is defined else "home_mid" %}
+{% if ads_for is defined %}
+  {% set ads = ads_for(_place) %}
+{% elif site_ads is defined and site_ads %}
+  {% set ads = site_ads.get(_place, []) %}
+{% else %}
+  {% set ads = [] %}
+{% endif %}
+{% if ads %}
+<aside class="ad-slot ad-slot-{{ _place }}" data-placement="{{ _place }}" aria-label="Advertisement">
+  {% for ad in ads %}
+  <div class="ad-unit">
+    <div class="ad-label">Advertisement</div>
+    {% if ad.link_url %}
+    <a href="{{ url_for('main.ad_click', ad_id=ad.id) }}" target="_blank" rel="noopener sponsored nofollow" class="ad-link">
+      {% if ad.image_url %}
+      <img src="{{ ad.image_url }}" alt="{{ ad.title or 'Sponsored' }}" class="ad-image" loading="lazy">
+      {% else %}
+      <span class="ad-text">{{ ad.title or 'Sponsored' }} →</span>
+      {% endif %}
+    </a>
+    {% elif ad.image_url %}
+    <img src="{{ ad.image_url }}" alt="{{ ad.title or 'Sponsored' }}" class="ad-image" loading="lazy">
+    {% else %}
+    <span class="ad-text">{{ ad.title or 'Ad' }}</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+</aside>
+{% endif %}

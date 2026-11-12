@@ -1,0 +1,76 @@
+{% extends "layouts/base.html" %}
+{% block title %}Terms and Conditions | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:800px">
+<article class="legal-doc" style="line-height:1.7">
+<h1>Terms and Conditions</h1>
+<p style="color:var(--text-muted)"><em>Last updated: October 2026 · {{ business_name }}, Urlabari, Morang, Nepal</em></p>
+
+<h2>1. Acceptance of terms</h2>
+<p>By accessing or using the {{ business_name }} website, mobile web app, marketplace, or repair booking services, you agree to these Terms and Conditions and our Privacy Policy. If you do not agree, do not use the service.</p>
+
+<h2>2. Description of services</h2>
+<p>We provide: (a) a marketplace to browse and purchase listed second-hand smartphones; (b) tools for approved sellers to list devices; (c) repair request booking with optional pickup and delivery coordinated by our team; and (d) related support such as order and repair tracking.</p>
+
+<h2>3. Eligibility and accounts</h2>
+<ul>
+  <li>You must provide accurate registration information and keep it updated.</li>
+  <li>You are responsible for safeguarding your login credentials and for activity under your account.</li>
+  <li>We may suspend or restrict accounts for fraud, abuse, non-payment of seller commissions, or violation of these terms.</li>
+</ul>
+
+<h2>4. Marketplace listings</h2>
+<ul>
+  <li>Listings must accurately describe brand, model, condition, accessories, and price. Misleading listings may be removed.</li>
+  <li>Admin inventory and seller inventory may appear on the same site; the product page indicates seller information where applicable.</li>
+  <li>Stock is limited; an order is subject to availability at confirmation.</li>
+  <li>IMEI/serial and private fields are for operational use and must not be used to harm others.</li>
+</ul>
+
+<h2>5. Pricing and payment</h2>
+<ul>
+  <li>Prices are shown in NPR unless stated otherwise.</li>
+  <li>Payment methods may include Cash on Delivery (COD) and QR payment, depending on the listing.</li>
+  <li><strong>QR minimum payment:</strong> a seller or admin may set a minimum QR amount lower than the full product price (example: full price NPR 25,000, minimum QR NPR 5,000). The buyer must pay at least that minimum via QR and submit a reference/proof. The order remains pending until the seller or admin verifies payment and confirms the order.</li>
+  <li>Remaining balances, if any, must be settled as agreed with the seller/admin (including on delivery where applicable).</li>
+  <li>We may refuse or cancel orders suspected of fraud or payment abuse.</li>
+</ul>
+
+<h2>6. Seller commission</h2>
+<p>Successful sales of seller-listed products may be subject to a platform commission (default configuration often 8% unless otherwise stated in your seller agreement or site settings). Commission is not charged on pure admin inventory or pure exchange arrangements as defined by the platform. Sellers must settle outstanding commission within the deadlines shown in the seller dashboard. Failure to pay may result in listing suspension or account restriction.</p>
+
+<h2>7. Orders, delivery, and risk</h2>
+<ul>
+  <li>Order status updates (pending, confirmed, shipped, delivered, cancelled, etc.) are managed by admin/seller processes on the platform.</li>
+  <li>Delivery times are estimates and may vary by location within Urlabari, Morang, and other service areas.</li>
+  <li>Inspect the device on delivery where possible and report obvious damage or mismatch promptly.</li>
+</ul>
+
+<h2>8. Repairs</h2>
+<ul>
+  <li>Repair bookings are requests for service, not a guarantee of a specific outcome until diagnosis is complete.</li>
+  <li>Pickup and delivery for repairs are arranged by our admin/team; live map tracking may be shown during active trips.</li>
+  <li>Additional parts or labour costs may require your approval before work continues.</li>
+  <li>Data on devices: please back up and remove personal accounts where possible. We are not responsible for data loss incidental to repair.</li>
+</ul>
+
+<h2>9. Prohibited use</h2>
+<p>You must not misuse the site (scraping that harms service, uploading malware, impersonation, listing stolen goods, or circumventing fees). We may remove content and cooperate with lawful investigations.</p>
+
+<h2>10. Intellectual property</h2>
+<p>Site design, branding, and original content belong to {{ business_name }} or its licensors. Product images remain subject to the rights of the uploader and platform licence to display them.</p>
+
+<h2>11. Disclaimers</h2>
+<p>Second-hand devices are sold as described. Unless a specific warranty is stated on the listing or provided in writing, statutory rights (if any) apply as required by applicable Nepalese law. Repair outcomes depend on device condition and parts availability.</p>
+
+<h2>12. Limitation of liability</h2>
+<p>To the fullest extent permitted by law, {{ business_name }} is not liable for indirect or consequential losses. Our total liability related to a transaction is limited to the amount paid for that order or repair service, except where liability cannot be limited by law.</p>
+
+<h2>13. Governing law</h2>
+<p>These terms are governed by the laws of Nepal. Disputes should first be raised with us in good faith; unresolved disputes may be submitted to competent courts in Nepal.</p>
+
+<h2>14. Contact</h2>
+<p>{{ business_email }} · {{ business_phone }} · Urlabari, Morang, Nepal</p>
+</article>
+</div></section>
+{% endblock %}

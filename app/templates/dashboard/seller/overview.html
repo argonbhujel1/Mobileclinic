@@ -1,0 +1,24 @@
+{% extends "layouts/base.html" %}
+{% block title %}Seller Dashboard | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+<h1>Seller Dashboard</h1>
+<div class="stat-grid" style="margin:1.5rem 0">
+<div class="stat-card"><div class="label">Outstanding Commission</div><div class="value">NPR {{ "{:,.0f}".format(outstanding) }}</div></div>
+<div class="stat-card"><div class="label">Listings</div><div class="value">{{ listings|length }}</div></div>
+</div>
+<div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2rem">
+<a href="{{ url_for('dashboard.profile') }}" class="btn btn-outline btn-sm">My Profile</a>
+<a href="{{ url_for('dashboard.seller_add_phone') }}" class="btn btn-primary btn-sm">Add Phone</a>
+<a href="{{ url_for('dashboard.seller_orders') }}" class="btn btn-outline btn-sm">Orders / verify QR</a>
+<a href="{{ url_for('dashboard.seller_exchanges') }}" class="btn btn-outline btn-sm">Exchange requests</a>
+<a href="{{ url_for('dashboard.pay_admin') }}" class="btn btn-outline btn-sm">Pay Admin</a>
+</div>
+<h2>My Listings</h2>
+{% for p in listings %}
+<div style="background:white;padding:1rem;border-radius:8px;margin-bottom:0.5rem;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+  <div><strong>{{ p.title }}</strong> — NPR {{ "{:,.0f}".format(p.selling_price) }} · Stock: {{ p.stock_quantity }} · {% if p.is_active %}Active{% else %}Inactive{% endif %}</div>
+  <a href="{{ url_for('dashboard.seller_edit_phone', product_id=p.id) }}" class="btn btn-outline btn-sm">Edit / Photos</a>
+</div>
+{% else %}<p style="color:var(--text-muted)">No listings yet.</p>{% endfor %}
+</div></section>{% endblock %}

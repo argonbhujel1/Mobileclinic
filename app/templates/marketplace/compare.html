@@ -1,0 +1,68 @@
+{% extends "layouts/base.html" %}
+{% block title %}Compare Phones | {{ business_name }}{% endblock %}
+{% block content %}
+<section class="section"><div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem">
+    <h1 style="margin:0">Phone Comparison</h1>
+    {% if products %}
+    <form method="post" action="{{ url_for('marketplace.compare_clear') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-ghost btn-sm">Clear all</button>
+    </form>
+    {% endif %}
+  </div>
+  <p style="color:var(--text-muted);margin-bottom:1.25rem">Compare up to 3 phones side by side. Add from product pages.</p>
+  {% if products|length < 2 %}
+  <div class="empty-state">
+    Add at least 2 phones to compare.
+    <div style="margin-top:1rem"><a href="{{ url_for('marketplace.browse') }}" class="btn btn-primary">Browse phones</a></div>
+  </div>
+  {% else %}
+  <div style="overflow-x:auto">
+    <table class="data-table" style="width:100%;min-width:640px;background:#fff;border-radius:12px;border:1px solid var(--border)">
+      <thead>
+        <tr>
+          <th style="width:140px">Spec</th>
+          {% for p in products %}
+          <th style="text-align:center;min-width:180px">
+            {% if p.primary_image %}
+            <img src="{{ p.primary_image }}" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:10px;margin-bottom:0.5rem">
+            {% endif %}
+            <div><a href="{{ url_for('marketplace.detail', product_uuid=p.uuid) }}">{{ p.title }}</a></div>
+            <form method="post" action="{{ url_for('marketplace.compare_remove', product_uuid=p.uuid) }}" style="margin-top:0.35rem">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-ghost btn-sm">Remove</button>
+            </form>
+          </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Price</strong></td>{% for p in products %}<td style="text-align:center;font-weight:700;color:var(--primary)">NPR {{ "{:,.0f}".format(p.selling_price or 0) }}</td>{% endfor %}</tr>
+        <tr><td><strong>Brand</strong></td>{% for p in products %}<td style="text-align:center">{{ p.brand or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Model</strong></td>{% for p in products %}<td style="text-align:center">{{ p.model or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Variant</strong></td>{% for p in products %}<td style="text-align:center">{{ p.variant or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>RAM</strong></td>{% for p in products %}<td style="text-align:center">{{ p.ram or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Storage</strong></td>{% for p in products %}<td style="text-align:center">{{ p.storage or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Condition</strong></td>{% for p in products %}<td style="text-align:center">{{ p.condition or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Warranty</strong></td>{% for p in products %}<td style="text-align:center">{{ p.warranty_status or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Accessories</strong></td>{% for p in products %}<td style="text-align:center">{{ p.accessories or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Location</strong></td>{% for p in products %}<td style="text-align:center">{{ p.location or '—' }}</td>{% endfor %}</tr>
+        <tr><td><strong>Type</strong></td>{% for p in products %}<td style="text-align:center">{{ p.product_type or 'phone' }}</td>{% endfor %}</tr>
+        <tr>
+          <td></td>
+          {% for p in products %}
+          <td style="text-align:center">
+            <form method="post" action="{{ url_for('marketplace.cart_add', product_id=p.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-primary btn-sm" type="submit">Add to cart</button>
+            </form>
+          </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div></section>
+{% endblock %}
